@@ -226,7 +226,7 @@
 
             <!-- Case Studies -->
             <div id="case-study-gst" class="stat-card md:col-span-2 lg:col-span-3 fade-in-up interactive-card">
-                <h2 class="text-2xl font-bold text-white mb-1">Driving Growth at Green Solar Technologies</h2>
+                <h2 class="text-2xl font-bold text-white mb-1">Case Study: Driving Growth at Green Solar Technologies</h2>
                 <p class="text-slate-300 mb-6">As a Sales Development Representative, I utilized CRM data to create highly effective, targeted sales campaigns.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
                     <div class="flow-step pl-4">
@@ -249,7 +249,7 @@
             </div>
 
             <div id="case-study-spectrum" class="stat-card md:col-span-2 lg:col-span-3 fade-in-up interactive-card">
-                <h2 class="text-2xl font-bold text-white mb-1">Maximizing Sales at Spectrum</h2>
+                <h2 class="text-2xl font-bold text-white mb-1">Case Study: Maximizing Sales at Spectrum</h2>
                 <p class="text-slate-300 mb-6">As a Customer Sales Representative, I focused on data analysis to refine sales strategies and boost performance.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
                     <div class="flow-step pl-4">
@@ -272,7 +272,7 @@
             </div>
             
             <div id="case-study-dasalla" class="stat-card md:col-span-2 lg:col-span-3 fade-in-up interactive-card">
-                <h2 class="text-2xl font-bold text-white mb-1">Product Management at Dasalla Trading</h2>
+                <h2 class="text-2xl font-bold text-white mb-1">Case Study: Product Management at Dasalla Trading</h2>
                 <p class="text-slate-300 mb-6">As a Product Manager, I applied a data-driven process to enhance operational and financial efficiency.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
                     <div class="flow-step pl-4">
