@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zachary Henley — Sales × Data Analytics</title>
 <meta name="description" content="Zachary Henley — Sales professional with a data analyst's toolkit. Consultative selling backed by SQL, R, Python, and Tableau. Los Angeles, CA.">
+<meta name="theme-color" content="#06070b">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zachary Henley — Sales × Data Analytics">
+<meta property="og:description" content="Sales instinct, analyst discipline. $720K revenue generated, 150% quota attainment — consultative selling backed by SQL, R, Python, and Tableau.">
+<meta property="og:url" content="https://zbhenley.github.io/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306070b'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='800' text-anchor='middle' fill='%235eead4'%3EZH%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -78,21 +84,21 @@
   }
   nav.hidden { transform: translateY(-100%); }
   .nav-inner {
-    max-width: var(--maxw); margin: 0 auto; padding: 16px var(--pad);
+    max-width: var(--maxw); margin: 0 auto; padding: 22px var(--pad);
     display: flex; align-items: center; justify-content: space-between;
   }
-  .nav-name { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; }
+  .nav-name { font-family: var(--font-display); font-weight: 800; font-size: 1.45rem; letter-spacing: -0.02em; }
   .nav-name b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .nav-links { display: flex; gap: 4px; }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
   .nav-links a {
-    color: var(--ink-2); font-size: 0.86rem; font-weight: 500;
-    padding: 7px 14px; border-radius: 999px;
+    color: var(--ink-2); font-size: 0.98rem; font-weight: 500;
+    padding: 10px 18px; border-radius: 999px;
     transition: color 0.2s, background 0.2s;
   }
-  .nav-links a:hover { color: var(--ink); background: rgba(255,255,255,0.06); }
+  .nav-links a:hover, .nav-links a.active { color: var(--ink); background: rgba(255,255,255,0.06); }
   .nav-cta {
-    font-size: 0.86rem; font-weight: 600; color: #06131b !important;
-    background: var(--grad); padding: 8px 18px; border-radius: 999px;
+    font-size: 0.98rem; font-weight: 600; color: #06131b !important;
+    background: var(--grad); padding: 11px 24px; border-radius: 999px;
   }
   .nav-cta:hover { filter: brightness(1.1); }
   @media (max-width: 720px) { .nav-links a:not(.nav-cta) { display: none; } }
@@ -214,7 +220,8 @@
   /* ============================================================
      SECTIONS / SHARED
   ============================================================ */
-  section { padding: clamp(80px, 12vw, 140px) 0; position: relative; }
+  section { padding: clamp(80px, 12vw, 140px) 0; position: relative; scroll-margin-top: 72px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--azure); outline-offset: 3px; }
   .sec-label {
     font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em;
     text-transform: uppercase; color: var(--teal); margin-bottom: 18px;
@@ -342,41 +349,42 @@
   .xp-card:hover { border-color: var(--line-strong); transform: translateY(-3px); }
   .xp-card:hover::before { opacity: 1; }
   @media (max-width: 760px) { .xp-card { grid-template-columns: 1fr; gap: 14px; padding: 28px 24px; } }
-  .xp-meta { display: flex; flex-direction: column; gap: 6px; }
-  .xp-index { font-family: var(--font-display); font-weight: 300; font-size: 2rem; color: var(--ink-3); line-height: 1; }
-  .xp-dates { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--ink-3); text-transform: uppercase; }
+  .xp-meta { display: flex; flex-direction: column; gap: 8px; }
+  .xp-index { font-family: var(--font-display); font-weight: 300; font-size: 2rem; color: var(--ink-3); line-height: 1; margin-bottom: 4px; }
+  .xp-dates { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--ink-2); text-transform: uppercase; line-height: 1.6; }
+  .xp-dates .dur { color: var(--teal); }
+  .xp-loc { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.05em; color: var(--ink-3); text-transform: uppercase; line-height: 1.5; }
   .xp-body h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em; }
   .xp-body .co { color: var(--teal); font-weight: 600; font-size: 0.95rem; margin-top: 2px; }
-  .xp-body ul { list-style: none; margin-top: 16px; display: grid; gap: 10px; }
-  .xp-body li { color: var(--ink-2); font-size: 0.94rem; padding-left: 22px; position: relative; }
+  .xp-body .co span { color: var(--ink-3); font-weight: 500; }
+  .xp-body ul { list-style: none; margin-top: 18px; display: grid; gap: 14px; }
+  .xp-body li { color: var(--ink-2); font-size: 0.96rem; padding-left: 22px; position: relative; }
   .xp-body li::before { content: "→"; position: absolute; left: 0; color: var(--azure); }
   .xp-body li strong { color: var(--ink); font-weight: 600; }
-  .xp-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .xp-tags span {
-    font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.05em;
-    color: var(--ink-2); border: 1px solid var(--line-strong);
-    padding: 4px 12px; border-radius: 999px;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .xp-card:hover .xp-tags span { color: var(--ink); }
 
   /* ============================================================
      SKILLS — interactive tabs
   ============================================================ */
   #skills { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .tabs { display: flex; gap: 8px; margin: 48px 0 34px; flex-wrap: wrap; }
-  .tab {
-    font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
-    color: var(--ink-2); background: none; border: 1px solid var(--line-strong);
-    padding: 11px 22px; border-radius: 999px; cursor: pointer;
-    transition: all 0.25s;
+  .tk-group {
+    display: grid; grid-template-columns: 280px 1fr; gap: 40px;
+    padding: 52px 0; border-top: 1px solid var(--line);
   }
-  .tab:hover { color: var(--ink); }
-  .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  .panel { display: none; }
-  .panel.active { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; animation: panelin 0.5s cubic-bezier(0.22,1,0.36,1); }
-  @media (max-width: 860px) { .panel.active { grid-template-columns: 1fr; } }
-  @keyframes panelin { from { opacity: 0; transform: translateY(14px); } }
+  .tk-group:first-of-type { border-top: none; margin-top: 48px; }
+  @media (max-width: 860px) { .tk-group { grid-template-columns: 1fr; gap: 22px; padding: 40px 0; } }
+  .tk-head .tk-num {
+    font-family: var(--font-display); font-weight: 300; font-size: 2rem;
+    color: var(--ink-3); line-height: 1; display: block; margin-bottom: 12px;
+  }
+  .tk-head h3 {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.7rem;
+    letter-spacing: -0.02em;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: inline-block;
+  }
+  .tk-head p { color: var(--ink-3); font-size: 0.88rem; margin-top: 10px; max-width: 24ch; }
+  .tk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-content: start; }
+  @media (max-width: 640px) { .tk-grid { grid-template-columns: 1fr; } }
   .skill-chip {
     background: var(--card); border: 1px solid var(--line); border-radius: 16px;
     padding: 20px 22px; transition: border-color 0.25s, transform 0.25s;
@@ -579,66 +587,64 @@
       <article class="xp-card rv" data-spotlight>
         <div class="xp-meta">
           <div class="xp-index">01</div>
-          <div class="xp-dates">Aug 2019<br>— Apr 2020</div>
+          <div class="xp-dates">Aug 2019 — Apr 2020<br><span class="dur">9 mos</span></div>
+          <div class="xp-loc">Los Angeles Metropolitan Area</div>
         </div>
         <div class="xp-body">
           <h3>Sales Development Representative</h3>
-          <div class="co">Green Solar Technologies · Los Angeles</div>
+          <div class="co">Green Solar Technologies <span>· Full-time</span></div>
           <ul>
-            <li>Full-cycle consultative sales — prospecting, tailored solution presentations, closing — contributing to <strong>$720,000 in revenue at 150% of monthly quota</strong>.</li>
-            <li>Mined Velocify CRM data to rank high-potential leads and build <strong>data-driven target lists</strong> across 100+ active opportunities.</li>
-            <li>Delivered weekly performance reports to leadership — outreach volume, conversion rates, revenue attainment — as clear, actionable insight.</li>
+            <li>Drove new business revenue through a consultative, full-cycle sales process — prospecting target accounts, delivering tailored solution presentations, and closing deals, contributing to <strong>$720,000 in generated revenue</strong> while consistently achieving <strong>150% of monthly quota</strong>.</li>
+            <li>Managed a high-volume territory pipeline in Velocify CRM, tracking <strong>100+ active accounts</strong> and logging all sales activities; delivered structured weekly territory performance reports to leadership covering outreach activity, conversion rates, and revenue attainment.</li>
           </ul>
-          <div class="xp-tags"><span>Consultative selling</span><span>CRM analytics</span><span>KPI reporting</span></div>
         </div>
       </article>
 
       <article class="xp-card rv" data-spotlight>
         <div class="xp-meta">
           <div class="xp-index">02</div>
-          <div class="xp-dates">Mar 2019<br>— Aug 2019</div>
+          <div class="xp-dates">Mar 2019 — Aug 2019<br><span class="dur">6 mos</span></div>
+          <div class="xp-loc">Los Angeles Metropolitan Area</div>
         </div>
         <div class="xp-body">
           <h3>Customer Sales Representative</h3>
-          <div class="co">Spectrum (Charter Communications) · Los Angeles</div>
+          <div class="co">Spectrum <span>· Full-time</span></div>
           <ul>
-            <li>Matched clients to tailored technology solutions — <strong>60+ new accounts monthly at 120% quota attainment</strong>.</li>
-            <li>Ran requirements gathering to recommend <strong>data-backed service solutions</strong>, lifting satisfaction and retention.</li>
-            <li>Owned the client relationship through onboarding; delivered weekly KPI summaries to management.</li>
+            <li>Executed a consultative sales process to match clients with tailored technology solutions — consistently acquiring <strong>60+ new accounts monthly</strong> while achieving <strong>120% quota attainment</strong> through strong technical communication and follow-through.</li>
+            <li>Served as the primary client contact throughout the sales and onboarding process, collaborating with internal teams to ensure smooth installation and high satisfaction; tracked account performance and delivered structured KPI summaries to management weekly.</li>
           </ul>
-          <div class="xp-tags"><span>Solution selling</span><span>Onboarding</span><span>KPI tracking</span></div>
         </div>
       </article>
 
       <article class="xp-card rv" data-spotlight>
         <div class="xp-meta">
           <div class="xp-index">03</div>
-          <div class="xp-dates">Sep 2016<br>— Aug 2018</div>
+          <div class="xp-dates">Sep 2016 — Aug 2018<br><span class="dur">2 yrs</span></div>
+          <div class="xp-loc">Los Angeles Metropolitan Area</div>
         </div>
         <div class="xp-body">
           <h3>Operations Manager</h3>
-          <div class="co">Senvicare · Los Angeles</div>
+          <div class="co">Senvicare <span>· Full-time</span></div>
           <ul>
-            <li>Coordinated <strong>complex multi-site field operations</strong> across Greater LA — scheduling, conflict resolution, compliance records.</li>
-            <li>Streamlined reporting workflows with leadership; trained staff on documentation standards, enabling <strong>data-driven decisions</strong> team-wide.</li>
+            <li>Managed client and service partner relationships across Greater Los Angeles, coordinating <strong>complex multi-site operations</strong>, resolving technical and logistical challenges proactively, and maintaining high satisfaction across all accounts.</li>
+            <li>Collaborated with leadership to streamline performance reporting workflows and improve data accuracy; trained staff on documentation and tracking standards, enhancing operational consistency and enabling <strong>data-driven decisions</strong>.</li>
           </ul>
-          <div class="xp-tags"><span>Stakeholder management</span><span>Reporting systems</span><span>Process design</span></div>
         </div>
       </article>
 
       <article class="xp-card rv" data-spotlight>
         <div class="xp-meta">
           <div class="xp-index">04</div>
-          <div class="xp-dates">May 2014<br>— Aug 2016</div>
+          <div class="xp-dates">May 2014 — Aug 2016<br><span class="dur">2 yrs 4 mos</span></div>
+          <div class="xp-loc">Los Angeles Metropolitan Area</div>
         </div>
         <div class="xp-body">
           <h3>Inventory Manager</h3>
-          <div class="co">Dasalla Trading Company · Los Angeles</div>
+          <div class="co">DaSalla's <span>· Full-time</span></div>
           <ul>
-            <li>Ran B2B and e-commerce partnerships across Amazon, Shopify, and Houzz — a <strong>$2,000,000 product portfolio</strong> with analysis and forecasting.</li>
-            <li>Identified <strong>$300,000 in non-performing stock</strong> through structured analysis; presented findings to leadership in executive-ready format.</li>
+            <li>Managed B2B and e-commerce partner relationships across multiple platforms, overseeing a <strong>$2,000,000 product portfolio</strong>; identified <strong>$300,000 in underperforming inventory</strong> through structured data analysis and presented findings to leadership in executive-ready format.</li>
+            <li>Coordinated with internal teams to track supplier performance, resolve partner concerns, and maintain accurate inventory and logistics records — ensuring consistent account satisfaction and strong long-term B2B relationships.</li>
           </ul>
-          <div class="xp-tags"><span>B2B relationships</span><span>Inventory analytics</span><span>Forecasting</span></div>
         </div>
       </article>
     </div>
@@ -651,37 +657,52 @@
     <div class="sec-label rv">Toolkit</div>
     <h2 class="sec-title rv d1">Two toolkits. <em>One job:</em> growing revenue.</h2>
 
-    <div class="tabs rv d2" role="tablist" aria-label="Skill categories">
-      <button class="tab" role="tab" aria-selected="true" aria-controls="p-sell" id="t-sell">Selling</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="p-data" id="t-data">Analytics</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="p-tools" id="t-tools">Platforms</button>
+    <div class="tk-group rv">
+      <div class="tk-head">
+        <span class="tk-num">01</span>
+        <h3>Selling</h3>
+        <p>The revenue engine — my most-endorsed skills on LinkedIn.</p>
+      </div>
+      <div class="tk-grid">
+        <div class="skill-chip"><b>Consultative Selling</b><small>Needs-first discovery, solution matching, long-term relationships.</small><span class="endorse">10 LinkedIn endorsements</span></div>
+        <div class="skill-chip"><b>Strategic Prospecting</b><small>Targeted, data-informed outreach that ranks leads before dialing.</small><span class="endorse">9 LinkedIn endorsements</span></div>
+        <div class="skill-chip"><b>Full-Cycle Sales</b><small>Prospect → present → negotiate → close → onboard.</small></div>
+        <div class="skill-chip"><b>Pipeline Management</b><small>100+ concurrent opportunities tracked with process discipline.</small></div>
+        <div class="skill-chip"><b>Stakeholder Management</b><small>Alignment across clients, internal teams, and leadership.</small></div>
+        <div class="skill-chip"><b>Pricing &amp; Market Research</b><small>Positioning offers with competitive and market context.</small></div>
+      </div>
     </div>
 
-    <div class="panel active" id="p-sell" role="tabpanel" aria-labelledby="t-sell">
-      <div class="skill-chip"><b>Consultative Selling</b><small>Needs-first discovery, solution matching, long-term relationships.</small><span class="endorse">10 LinkedIn endorsements</span></div>
-      <div class="skill-chip"><b>Strategic Prospecting</b><small>Targeted, data-informed outreach that ranks leads before dialing.</small><span class="endorse">9 LinkedIn endorsements</span></div>
-      <div class="skill-chip"><b>Full-Cycle Sales</b><small>Prospect → present → negotiate → close → onboard.</small></div>
-      <div class="skill-chip"><b>Pipeline Management</b><small>100+ concurrent opportunities tracked with process discipline.</small></div>
-      <div class="skill-chip"><b>Stakeholder Management</b><small>Alignment across clients, internal teams, and leadership.</small></div>
-      <div class="skill-chip"><b>Pricing &amp; Market Research</b><small>Positioning offers with competitive and market context.</small></div>
+    <div class="tk-group rv">
+      <div class="tk-head">
+        <span class="tk-num">02</span>
+        <h3>Analytics</h3>
+        <p>The edge — Google Data Analytics certified.</p>
+      </div>
+      <div class="tk-grid">
+        <div class="skill-chip"><b>SQL</b><small>PostgreSQL, MySQL, Google BigQuery — querying and joining real datasets.</small><span class="endorse">Google-certified</span></div>
+        <div class="skill-chip"><b>R</b><small>RStudio and tidyverse workflows for cleaning and analysis.</small><span class="endorse">Google-certified</span></div>
+        <div class="skill-chip"><b>Python</b><small>Data cleaning and exploratory analysis.</small><span class="endorse">5 LinkedIn endorsements</span></div>
+        <div class="skill-chip"><b>Statistical Analysis</b><small>From descriptive summaries to pattern-finding that changes strategy.</small></div>
+        <div class="skill-chip"><b>Data Storytelling</b><small>Executive-ready findings — the analysis is only as good as the telling.</small></div>
+        <div class="skill-chip"><b>KPI Development</b><small>Defining and tracking the metrics that actually predict revenue.</small></div>
+      </div>
     </div>
 
-    <div class="panel" id="p-data" role="tabpanel" aria-labelledby="t-data" hidden>
-      <div class="skill-chip"><b>SQL</b><small>PostgreSQL, MySQL, Google BigQuery — querying and joining real datasets.</small><span class="endorse">Google-certified</span></div>
-      <div class="skill-chip"><b>R</b><small>RStudio and tidyverse workflows for cleaning and analysis.</small><span class="endorse">Google-certified</span></div>
-      <div class="skill-chip"><b>Python</b><small>Data cleaning and exploratory analysis.</small><span class="endorse">5 LinkedIn endorsements</span></div>
-      <div class="skill-chip"><b>Statistical Analysis</b><small>From descriptive summaries to pattern-finding that changes strategy.</small></div>
-      <div class="skill-chip"><b>Data Storytelling</b><small>Executive-ready findings — the analysis is only as good as the telling.</small></div>
-      <div class="skill-chip"><b>KPI Development</b><small>Defining and tracking the metrics that actually predict revenue.</small></div>
-    </div>
-
-    <div class="panel" id="p-tools" role="tabpanel" aria-labelledby="t-tools" hidden>
-      <div class="skill-chip"><b>Tableau · Power BI · Looker</b><small>Dashboards and reports leadership actually reads.</small></div>
-      <div class="skill-chip"><b>Salesforce · HubSpot · Velocify</b><small>CRM as a data source, not just a logbook.</small></div>
-      <div class="skill-chip"><b>Excel &amp; Google Sheets</b><small>Advanced formulas, pivot analysis, spreadsheet modeling.</small></div>
-      <div class="skill-chip"><b>Google Workspace &amp; MS Office</b><small>Docs, Slides, PowerPoint — polished client-facing collateral.</small></div>
-      <div class="skill-chip"><b>Slack</b><small>Cross-functional collaboration at speed.</small></div>
-      <div class="skill-chip"><b>Amazon · Shopify · Houzz</b><small>E-commerce operations across marketplace platforms.</small></div>
+    <div class="tk-group rv">
+      <div class="tk-head">
+        <span class="tk-num">03</span>
+        <h3>Platforms</h3>
+        <p>The daily drivers, from CRM to BI.</p>
+      </div>
+      <div class="tk-grid">
+        <div class="skill-chip"><b>Tableau · Power BI · Looker</b><small>Dashboards and reports leadership actually reads.</small></div>
+        <div class="skill-chip"><b>Salesforce · HubSpot · Velocify</b><small>CRM as a data source, not just a logbook.</small></div>
+        <div class="skill-chip"><b>Excel &amp; Google Sheets</b><small>Advanced formulas, pivot analysis, spreadsheet modeling.</small></div>
+        <div class="skill-chip"><b>Google Workspace &amp; MS Office</b><small>Docs, Slides, PowerPoint — polished client-facing collateral.</small></div>
+        <div class="skill-chip"><b>Slack</b><small>Cross-functional collaboration at speed.</small></div>
+        <div class="skill-chip"><b>Amazon · Shopify · Houzz</b><small>E-commerce operations across marketplace platforms.</small></div>
+      </div>
     </div>
   </div>
 </section>
@@ -718,6 +739,7 @@
     <a href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener">LinkedIn</a>
     <a href="https://github.com/zbhenley" target="_blank" rel="noopener">GitHub</a>
     <a href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener">Kaggle</a>
+    <a href="#top">Back to top ↑</a>
   </div>
 </footer>
 
@@ -904,27 +926,38 @@
     });
   }
 
-  /* ---------- skills tabs ---------- */
-  const tabs = document.querySelectorAll('.tab');
-  const panels = document.querySelectorAll('.panel');
-  tabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.setAttribute('aria-selected', t === tab));
-      panels.forEach(p => {
-        const active = p.id === tab.getAttribute('aria-controls');
-        p.classList.toggle('active', active);
-        p.hidden = !active;
+  /* ---------- active nav link tracks the section in view ---------- */
+  const navAnchors = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+  if (io && navAnchors.length) {
+    const byId = Object.fromEntries(navAnchors.map(a => [a.getAttribute('href').slice(1), a]));
+    const secObs = new IntersectionObserver((es) => {
+      es.forEach(e => {
+        if (e.isIntersecting && byId[e.target.id]) {
+          navAnchors.forEach(a => a.classList.toggle('active', a === byId[e.target.id]));
+        }
       });
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    ['numbers', 'method', 'experience', 'skills'].forEach(id => {
+      const s = document.getElementById(id);
+      if (s) secObs.observe(s);
     });
-    tab.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        const next = (i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
-        tabs[next].focus(); tabs[next].click();
-      }
-    });
-  });
+  }
+
+  /* ---------- hero aurora parallax (desktop pointers only) ---------- */
+  if (!reduceMotion && matchMedia('(pointer: fine)').matches) {
+    const aurora = document.querySelector('.aurora');
+    const hero = document.querySelector('.hero');
+    if (aurora && hero) {
+      hero.addEventListener('pointermove', (e) => {
+        const dx = (e.clientX / innerWidth - 0.5) * 30;
+        const dy = (e.clientY / innerHeight - 0.5) * 20;
+        aurora.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      hero.addEventListener('pointerleave', () => { aurora.style.transform = ''; });
+    }
+  }
 })();
 </script>
 
 </body>
-</html>  
+</html>
