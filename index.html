@@ -872,7 +872,8 @@
     svg.appendChild(seg);
     svg.appendChild(txt({ x: X0, y: y - 16, class: 'val-label' }, '$300K identified'));
     svg.appendChild(txt({ x: X0 + XW, y: y - 16, 'text-anchor': 'end', class: 'ax-label' }, '$2.0M portfolio'));
-    svg.appendChild(txt({ x: X0, y: y + barH + 28, class: 'ax-label' }, '15% of inventory was dead weight. The analysis found it; leadership approved the return.'));
+    svg.appendChild(txt({ x: X0, y: y + barH + 28, class: 'ax-label' }, '15% of inventory was dead weight.'));
+    svg.appendChild(txt({ x: X0, y: y + barH + 46, class: 'ax-label' }, 'The analysis found it; leadership approved the return.'));
     const tipTitle = 'Dasalla Trading Co.';
     const tipBody = '$300,000 in non-performing stock identified through structured analysis — 15% of the $2M portfolio — and returned to improve cash flow.';
     seg.addEventListener('pointermove', (ev) => showTip(tipTitle, tipBody, ev.clientX, ev.clientY));
