@@ -1,573 +1,930 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zachary Henley - Interactive Professional Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0A0A0A; /* Slightly darker background */
-            color: #f1f5f9;
-            overflow-x: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zachary Henley — Sales × Data Analytics</title>
+<meta name="description" content="Zachary Henley — Sales professional with a data analyst's toolkit. Consultative selling backed by SQL, R, Python, and Tableau. Los Angeles, CA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     TOKENS
+  ============================================================ */
+  :root {
+    --bg: #06070b;
+    --surface: #0c0e15;
+    --card: #10131d;
+    --line: rgba(233, 238, 250, 0.08);
+    --line-strong: rgba(233, 238, 250, 0.16);
+    --ink: #f2f4f9;
+    --ink-2: #a2abbe;
+    --ink-3: #5d6577;
+    --teal: #5eead4;
+    --azure: #6aa9ff;
+    --chart-hue: #8ab8ff;      /* single sequential hue for data marks */
+    --grad: linear-gradient(92deg, var(--teal) 0%, var(--azure) 100%);
+    --font-display: 'Bricolage Grotesque', 'Avenir Next', sans-serif;
+    --font-body: 'Instrument Sans', -apple-system, 'Helvetica Neue', sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+    --maxw: 1120px;
+    --pad: clamp(20px, 4vw, 48px);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: rgba(106, 169, 255, 0.35); }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad); }
 
-        /* --- Aurora Background Effect --- */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle at 15% 25%, rgba(255, 166, 0, 0.15) 0%, transparent 30%),
-                        radial-gradient(circle at 85% 75%, rgba(239, 86, 117, 0.15) 0%, transparent 30%);
-            z-index: -2;
-            animation: move-aurora 20s infinite alternate ease-in-out;
-        }
+  /* film grain over everything, very faint */
+  body::after {
+    content: ""; position: fixed; inset: -50%; z-index: 999; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.028;
+    animation: grain 9s steps(6) infinite;
+  }
+  @keyframes grain {
+    0%,100% { transform: translate(0,0); } 20% { transform: translate(-6%,4%); }
+    40% { transform: translate(4%,-7%); } 60% { transform: translate(-4%,-3%); } 80% { transform: translate(6%,5%); }
+  }
 
-        @keyframes move-aurora {
-            from { transform: rotate(0deg) scale(1); }
-            to { transform: rotate(360deg) scale(1.2); }
-        }
+  /* ============================================================
+     SCROLL PROGRESS + NAV
+  ============================================================ */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--grad); z-index: 200;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), background 0.3s ease;
+    background: transparent;
+  }
+  nav.scrolled {
+    background: rgba(6, 7, 11, 0.6);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid var(--line);
+  }
+  nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 16px var(--pad);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-name { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; }
+  .nav-name b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    color: var(--ink-2); font-size: 0.86rem; font-weight: 500;
+    padding: 7px 14px; border-radius: 999px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); background: rgba(255,255,255,0.06); }
+  .nav-cta {
+    font-size: 0.86rem; font-weight: 600; color: #06131b !important;
+    background: var(--grad); padding: 8px 18px; border-radius: 999px;
+  }
+  .nav-cta:hover { filter: brightness(1.1); }
+  @media (max-width: 720px) { .nav-links a:not(.nav-cta) { display: none; } }
 
-        /* --- Interactive Mouse-Following Gradient --- */
-        #interactive-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            transition: background 0.2s linear;
-        }
+  /* ============================================================
+     HERO
+  ============================================================ */
+  .hero {
+    min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden; padding-top: 70px;
+  }
+  .aurora { position: absolute; inset: 0; pointer-events: none; }
+  .aurora span {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35;
+    will-change: transform;
+  }
+  .aurora .a1 { width: 55vw; height: 55vw; background: #0e4d68; top: -22vw; left: -12vw; animation: drift1 26s ease-in-out infinite alternate; }
+  .aurora .a2 { width: 42vw; height: 42vw; background: #123a7a; bottom: -18vw; right: -8vw; animation: drift2 32s ease-in-out infinite alternate; }
+  .aurora .a3 { width: 26vw; height: 26vw; background: #0d5e52; top: 32%; right: 18%; opacity: 0.22; animation: drift1 40s ease-in-out infinite alternate-reverse; }
+  @keyframes drift1 { to { transform: translate(9vw, 7vh) scale(1.12); } }
+  @keyframes drift2 { to { transform: translate(-8vw, -6vh) scale(0.92); } }
 
-        /* --- Enhanced Card Styling (Glassmorphism) --- */
-        .stat-card {
-            background-color: rgba(20, 20, 22, 0.4); /* Darker, more translucent */
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 1.25rem;
-            padding: 1.5rem 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
+  .hero-inner { position: relative; z-index: 2; }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-2);
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px;
+    margin-bottom: 34px;
+  }
+  .hero-kicker::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--teal); box-shadow: 0 0 12px var(--teal);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.35; } }
 
-        .stat-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-            border-color: rgba(255, 166, 0, 0.6);
-        }
-        
-        .interactive-card {
-            cursor: pointer;
-        }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 9.5vw, 7.2rem);
+    font-weight: 800; line-height: 0.98; letter-spacing: -0.035em;
+  }
+  .hero h1 .word { display: inline-block; overflow: hidden; vertical-align: bottom; }
+  .hero h1 .word i {
+    display: inline-block; font-style: normal;
+    transform: translateY(110%);
+    animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .hero h1 .word:nth-child(1) i { animation-delay: 0.05s; }
+  .hero h1 .word:nth-child(2) i { animation-delay: 0.13s; }
+  .hero h1 .word:nth-child(3) i { animation-delay: 0.21s; }
+  .hero h1 .word:nth-child(4) i { animation-delay: 0.29s; }
+  .hero h1 .word:nth-child(5) i { animation-delay: 0.37s; }
+  .hero h1 .word:nth-child(6) i { animation-delay: 0.45s; }
+  @keyframes rise { to { transform: translateY(0); } }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(92deg, var(--teal), var(--azure), var(--teal));
+    background-size: 200% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: sheen 6s linear infinite;
+  }
+  @keyframes sheen { to { background-position: 200% 0; } }
 
-        /* --- Gradient Text & Elements --- */
-        .gradient-text {
-            background: linear-gradient(90deg, #ffae42, #ff764a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-        }
-        
-        .flow-step {
-            border-left: 4px solid #ffae42;
-        }
+  .hero-sub {
+    margin-top: 30px; max-width: 560px;
+    font-size: clamp(1rem, 1.6vw, 1.18rem); color: var(--ink-2);
+    opacity: 0; animation: fadeup 0.8s ease 0.65s forwards;
+  }
+  .hero-sub strong { color: var(--ink); font-weight: 600; }
+  @keyframes fadeup { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
-        .flow-arrow {
-            color: #ffae42;
-            font-weight: bold;
-            font-size: 2rem;
-            text-align: center;
-            margin: 0.5rem 0;
-            animation: pulse-arrow 2s infinite;
-        }
+  .hero-cta {
+    display: flex; flex-wrap: wrap; gap: 12px; margin-top: 38px;
+    opacity: 0; animation: fadeup 0.8s ease 0.8s forwards;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 26px; border-radius: 999px; font-weight: 600; font-size: 0.95rem;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.2s;
+    will-change: transform;
+  }
+  .btn-fill { background: var(--grad); color: #06131b; }
+  .btn-fill:hover { box-shadow: 0 10px 40px rgba(94, 234, 212, 0.25); }
+  .btn-line { border: 1px solid var(--line-strong); color: var(--ink); }
+  .btn-line:hover { border-color: rgba(233,238,250,0.4); }
 
-        @keyframes pulse-arrow {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-        }
-        
-        .bg-custom-grey {
-            background-color: rgba(30, 30, 33, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        
-        .bg-custom-grey:hover {
-            background-color: rgba(255, 174, 66, 0.15);
-            transform: scale(1.05);
-        }
+  .hero-scrollcue {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    z-index: 2; color: var(--ink-3); font-family: var(--font-mono); font-size: 0.68rem;
+    letter-spacing: 0.22em; text-transform: uppercase; text-align: center;
+    opacity: 0; animation: fadeup 1s ease 1.4s forwards;
+  }
+  .hero-scrollcue::after {
+    content: ""; display: block; width: 1px; height: 44px; margin: 10px auto 0;
+    background: linear-gradient(var(--ink-3), transparent);
+    animation: cue 2s ease-in-out infinite;
+  }
+  @keyframes cue { 50% { transform: scaleY(0.55); transform-origin: top; } }
 
-        .toolkit-link {
-            text-decoration: none;
-            color: #f1f5f9;
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .toolkit-link::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            transform: scaleX(0);
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background: linear-gradient(90deg, #ffae42, #ff764a);
-            transform-origin: bottom right;
-            transition: transform 0.3s ease-out;
-        }
-        .toolkit-link:hover {
-            color: #ffae42;
-        }
-        .toolkit-link:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-        }
-        
-        /* --- Typing Animation Cursor --- */
-        #subtitle-cursor {
-            animation: blink 1s step-end infinite;
-        }
+  /* ============================================================
+     MARQUEE
+  ============================================================ */
+  .marquee {
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 20px 0; overflow: hidden; position: relative;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .marquee-track { display: flex; gap: 48px; width: max-content; animation: marquee 36s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  .marquee-track span {
+    font-family: var(--font-display); font-weight: 500; font-size: 1rem;
+    color: var(--ink-3); white-space: nowrap; display: flex; align-items: center; gap: 48px;
+  }
+  .marquee-track span::after { content: "·"; color: var(--teal); }
+  @keyframes marquee { to { transform: translateX(-50%); } }
 
-        @keyframes blink {
-            from, to { color: transparent; }
-            50% { color: #ffae42; }
-        }
+  /* ============================================================
+     SECTIONS / SHARED
+  ============================================================ */
+  section { padding: clamp(80px, 12vw, 140px) 0; position: relative; }
+  .sec-label {
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sec-label::after { content: ""; height: 1px; width: 56px; background: var(--line-strong); }
+  .sec-title {
+    font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em;
+    font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.05; max-width: 20ch;
+  }
+  .sec-title em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-        /* --- Fade-in Animation --- */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .fade-in-up.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+  /* reveal — hidden state gated on .js-anim so content survives without JS */
+  .js-anim .rv { opacity: 0; transform: translateY(26px); transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1); }
+  .js-anim .rv.on { opacity: 1; transform: none; }
+  .js-anim .rv.d1 { transition-delay: 0.08s; } .js-anim .rv.d2 { transition-delay: 0.16s; }
+  .js-anim .rv.d3 { transition-delay: 0.24s; } .js-anim .rv.d4 { transition-delay: 0.32s; }
+
+  /* ============================================================
+     NUMBERS — stat tiles + charts
+  ============================================================ */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--line); border: 1px solid var(--line); border-radius: 20px;
+    overflow: hidden; margin-top: 56px; margin-bottom: 22px;
+  }
+  @media (max-width: 860px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    background: var(--surface); padding: 34px 28px; position: relative; overflow: hidden;
+  }
+  .stat:hover .stat-num { color: transparent; background: var(--grad); -webkit-background-clip: text; background-clip: text; }
+  .stat-num {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em;
+    font-size: clamp(2.1rem, 4vw, 3rem); font-variant-numeric: tabular-nums;
+    transition: color 0.3s;
+  }
+  .stat-label { color: var(--ink-2); font-size: 0.88rem; margin-top: 8px; line-height: 1.45; }
+  .stat-src { color: var(--ink-3); font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 14px; }
+
+  .charts-row { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; }
+  @media (max-width: 860px) { .charts-row { grid-template-columns: 1fr; } }
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+    padding: 30px 28px; position: relative;
+  }
+  .chart-card h3 { font-family: var(--font-body); font-weight: 600; font-size: 1.02rem; }
+  .chart-card .chart-sub { color: var(--ink-3); font-size: 0.82rem; margin-top: 3px; margin-bottom: 26px; }
+  .chart-card svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart-card text { font-family: var(--font-body); }
+  .bar-rect { cursor: pointer; }
+  .bar-rect:focus { outline: none; }
+  .bar-rect:focus-visible { stroke: var(--ink); stroke-width: 1.5; }
+  .bar-track { fill: rgba(233,238,250,0.05); }
+  .grid-line { stroke: var(--line); stroke-width: 1; }
+  .target-line { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 4; }
+  .ax-label { fill: var(--ink-3); font-size: 11px; }
+  .cat-label { fill: var(--ink-2); font-size: 12.5px; font-weight: 500; }
+  .val-label { fill: var(--ink); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  #tooltip {
+    position: fixed; z-index: 300; pointer-events: none;
+    background: rgba(18, 21, 29, 0.92); backdrop-filter: blur(8px);
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    padding: 10px 14px; font-size: 0.82rem; color: var(--ink-2);
+    max-width: 260px; opacity: 0; transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  #tooltip.show { opacity: 1; transform: none; }
+  #tooltip b { color: var(--ink); display: block; margin-bottom: 2px; }
+
+  /* ============================================================
+     METHOD — pinned scrollytelling
+  ============================================================ */
+  #method { padding: 0; }
+  .pin-outer { position: relative; height: 340svh; }
+  .pin-stage {
+    position: sticky; top: 0; height: 100svh; display: flex; align-items: center;
+    overflow: hidden;
+  }
+  .pin-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(800px 500px at 70% 50%, rgba(14, 60, 90, 0.35), transparent 65%);
+  }
+  .pin-inner { position: relative; width: 100%; }
+  .step-words { position: relative; min-height: 46vh; }
+  .step {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; transform: translateY(40px) scale(0.98);
+    transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1), transform 0.55s cubic-bezier(0.22,1,0.36,1);
+    pointer-events: none;
+  }
+  .step.active { opacity: 1; transform: none; pointer-events: auto; }
+  .step-index { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em; color: var(--teal); margin-bottom: 16px; }
+  .step h3 {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em;
+    font-size: clamp(3rem, 10vw, 7.5rem); line-height: 1;
+  }
+  .step p { margin-top: 20px; max-width: 480px; color: var(--ink-2); font-size: clamp(0.95rem, 1.5vw, 1.1rem); }
+  .step p strong { color: var(--ink); }
+  .step-dots { position: absolute; right: var(--pad); top: 50%; transform: translateY(-50%); display: grid; gap: 10px; }
+  .step-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); opacity: 0.4; transition: all 0.3s; }
+  .step-dots i.active { opacity: 1; background: var(--teal); box-shadow: 0 0 10px var(--teal); transform: scale(1.3); }
+  .no-anim .step { position: relative; opacity: 1; transform: none; margin-bottom: 60px; }
+  .no-anim .pin-outer { height: auto; padding: 80px 0; }
+  .no-anim .pin-stage { position: relative; height: auto; }
+  .no-anim .step-words { min-height: 0; }
+
+  /* ============================================================
+     EXPERIENCE — spotlight cards
+  ============================================================ */
+  .xp-list { display: grid; gap: 18px; margin-top: 56px; }
+  .xp-card {
+    position: relative; border: 1px solid var(--line); border-radius: 20px;
+    background: var(--surface); padding: 36px 34px;
+    display: grid; grid-template-columns: 150px 1fr; gap: 30px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  .xp-card::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(106, 169, 255, 0.09), transparent 60%);
+    opacity: 0; transition: opacity 0.35s;
+    pointer-events: none;
+  }
+  .xp-card:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+  .xp-card:hover::before { opacity: 1; }
+  @media (max-width: 760px) { .xp-card { grid-template-columns: 1fr; gap: 14px; padding: 28px 24px; } }
+  .xp-meta { display: flex; flex-direction: column; gap: 6px; }
+  .xp-index { font-family: var(--font-display); font-weight: 300; font-size: 2rem; color: var(--ink-3); line-height: 1; }
+  .xp-dates { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--ink-3); text-transform: uppercase; }
+  .xp-body h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em; }
+  .xp-body .co { color: var(--teal); font-weight: 600; font-size: 0.95rem; margin-top: 2px; }
+  .xp-body ul { list-style: none; margin-top: 16px; display: grid; gap: 10px; }
+  .xp-body li { color: var(--ink-2); font-size: 0.94rem; padding-left: 22px; position: relative; }
+  .xp-body li::before { content: "→"; position: absolute; left: 0; color: var(--azure); }
+  .xp-body li strong { color: var(--ink); font-weight: 600; }
+  .xp-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .xp-tags span {
+    font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.05em;
+    color: var(--ink-2); border: 1px solid var(--line-strong);
+    padding: 4px 12px; border-radius: 999px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .xp-card:hover .xp-tags span { color: var(--ink); }
+
+  /* ============================================================
+     SKILLS — interactive tabs
+  ============================================================ */
+  #skills { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .tabs { display: flex; gap: 8px; margin: 48px 0 34px; flex-wrap: wrap; }
+  .tab {
+    font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
+    color: var(--ink-2); background: none; border: 1px solid var(--line-strong);
+    padding: 11px 22px; border-radius: 999px; cursor: pointer;
+    transition: all 0.25s;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .panel { display: none; }
+  .panel.active { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; animation: panelin 0.5s cubic-bezier(0.22,1,0.36,1); }
+  @media (max-width: 860px) { .panel.active { grid-template-columns: 1fr; } }
+  @keyframes panelin { from { opacity: 0; transform: translateY(14px); } }
+  .skill-chip {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 20px 22px; transition: border-color 0.25s, transform 0.25s;
+  }
+  .skill-chip:hover { border-color: rgba(94, 234, 212, 0.35); transform: translateY(-2px); }
+  .skill-chip b { display: block; font-size: 0.96rem; font-weight: 600; }
+  .skill-chip small { color: var(--ink-3); font-size: 0.8rem; line-height: 1.5; display: block; margin-top: 4px; }
+  .endorse { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--teal); text-transform: uppercase; }
+  .endorse::before { content: "✓"; }
+
+  /* ============================================================
+     EDUCATION
+  ============================================================ */
+  .edu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 52px; }
+  @media (max-width: 760px) { .edu-grid { grid-template-columns: 1fr; } }
+  .edu-card {
+    border: 1px solid var(--line); border-radius: 18px; padding: 26px 26px;
+    background: var(--surface); transition: border-color 0.25s;
+  }
+  .edu-card:hover { border-color: var(--line-strong); }
+  .edu-card .tag {
+    font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal);
+  }
+  .edu-card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.08rem; margin-top: 10px; letter-spacing: -0.01em; }
+  .edu-card p { color: var(--ink-3); font-size: 0.86rem; margin-top: 5px; }
+
+  /* ============================================================
+     CONTACT
+  ============================================================ */
+  #contact { text-align: center; overflow: hidden; }
+  #contact .big {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em;
+    font-size: clamp(2.6rem, 8vw, 5.6rem); line-height: 1;
+  }
+  #contact .big em {
+    font-style: normal;
+    background: linear-gradient(92deg, var(--teal), var(--azure), var(--teal));
+    background-size: 200% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: sheen 6s linear infinite;
+  }
+  #contact .lede { color: var(--ink-2); max-width: 500px; margin: 26px auto 40px; }
+  .contact-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+  footer {
+    border-top: 1px solid var(--line); padding: 30px var(--pad);
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;
+    max-width: var(--maxw); margin: 0 auto;
+    color: var(--ink-3); font-size: 0.82rem;
+  }
+  footer .foot-links { display: flex; gap: 20px; }
+  footer a:hover { color: var(--ink); }
+
+  /* ============================================================
+     MOTION SAFETY
+  ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+    .js-anim .rv { opacity: 1; transform: none; }
+    .hero h1 .word i { transform: none; }
+    .hero-sub, .hero-cta, .hero-scrollcue { opacity: 1; }
+  }
+</style>
 </head>
-<body class="antialiased">
-    <div id="interactive-bg"></div>
-    <div class="container mx-auto p-4 md:p-8 relative z-10">
+<body>
 
-        <header class="text-center mb-20">
-            <h1 class="text-5xl md:text-7xl font-black mb-3 gradient-text">Zachary Henley</h1>
-            <p id="animated-subtitle" class="text-xl md:text-2xl font-semibold text-slate-300 min-h-[32px]"></p>
-            <div class="flex justify-center items-center gap-6 mt-8">
-                <a href="mailto:zacharybhenley@gmail.com" class="text-slate-400 hover:text-amber-400 transition-all transform hover:scale-110" title="Email">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                </a>
-                <a href="https://www.linkedin.com/in/zachary-henley" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-amber-400 transition-all transform hover:scale-110" title="LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                </a>
-                <a href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-amber-400 transition-all transform hover:scale-110" title="Kaggle">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12.2,16.2l-3.8-3.8l3.8-3.8l1.2,1.2l-2.6,2.6l2.6,2.6L12.2,16.2z M18,12l-6,6l-1.2-1.2l4.8-4.8l-4.8-4.8L12,6L18,12z"/></svg>
-                </a>
-            </div>
-        </header>
+<div id="progress"></div>
+<div id="tooltip" role="tooltip"></div>
 
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <div class="stat-card md:col-span-2 lg:col-span-3 fade-in-up">
-                <h2 class="text-2xl font-bold text-white mb-4">Professional Summary</h2>
-                <p class="text-slate-300 leading-relaxed">Driven and results-oriented professional with a proven record of exceeding sales targets by up to 150%. My experience in consultative sales and strategic prospecting has honed my ability to identify needs, build strong client relationships, and generate significant revenue. I leverage a unique analytical perspective, using data to inform outreach strategies and unlock strategic opportunities. I am eager to apply my skills in exceeding quotas and fostering client retention to a dynamic recruiting or sales role.</p>
-            </div>
+<nav id="nav">
+  <div class="nav-inner">
+    <a class="nav-name" href="#top">Zachary <b>Henley</b></a>
+    <div class="nav-links">
+      <a href="#numbers">Numbers</a>
+      <a href="#method">Method</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a class="nav-cta" href="mailto:zacharybhenley@gmail.com">Get in touch</a>
+    </div>
+  </div>
+</nav>
 
-            <div class="stat-card lg:col-span-1 md:col-span-1 fade-in-up">
-                <h2 class="text-2xl font-bold text-white mb-1">Strategic Revenue Growth</h2>
-                <p class="text-slate-300 mb-4">An analytical approach to sales led to exceptional performance and consistent growth.</p>
-                <div class="chart-container mt-auto">
-                    <canvas id="revenueLineChart"></canvas>
-                </div>
-            </div>
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+  <div class="wrap hero-inner">
+    <span class="hero-kicker">Open to Account Executive roles — Los Angeles / Remote</span>
+    <h1>
+      <span class="word"><i>Sales&nbsp;</i></span><span class="word"><i>instinct,</i></span><br>
+      <span class="word"><i><em>analyst</em>&nbsp;</i></span><span class="word"><i><em>discipline.</em></i></span>
+    </h1>
+    <p class="hero-sub">
+      I'm Zachary Henley. I close deals the way an analyst reads data — <strong>consultative
+      selling and strategic prospecting</strong>, sharpened by <strong>SQL, R, Python, and
+      Tableau</strong>. The pipeline isn't a to-do list. It's a dataset.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>Start a conversation</a>
+      <a class="btn btn-line" href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener" data-magnet>LinkedIn</a>
+      <a class="btn btn-line" href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener" data-magnet>Kaggle</a>
+    </div>
+  </div>
+  <div class="hero-scrollcue">Scroll</div>
+</header>
 
-            <div class="stat-card lg:col-span-1 md:col-span-1 fade-in-up" style="transition-delay: 150ms;">
-                <h2 class="text-2xl font-bold text-white mb-4">High-Impact Results</h2>
-                <p class="text-slate-300 mb-6">Driving tangible financial outcomes through data-informed strategies. Click a card to learn more.</p>
-                <div class="space-y-4 mt-auto">
-                    <div class="bg-custom-grey p-4 rounded-lg text-center interactive-card" onclick="document.getElementById('case-study-gst').scrollIntoView();">
-                        <p class="text-lg font-semibold text-slate-300">Revenue Generated</p>
-                        <p class="text-5xl font-extrabold" style="color: #ffa600;" data-target-value="720000">0</p>
-                        <p class="text-slate-400 mt-1">at Green Solar</p>
-                    </div>
-                    <div class="bg-custom-grey p-4 rounded-lg text-center interactive-card" onclick="document.getElementById('case-study-dasalla').scrollIntoView();">
-                        <p class="text-lg font-semibold text-slate-300">Product Line Analyzed</p>
-                        <p class="text-5xl font-extrabold" style="color: #ff764a;" data-target-value="2000000">0</p>
-                        <p class="text-slate-400 mt-1">as Product Manager</p>
-                    </div>
-                    <div class="bg-custom-grey p-4 rounded-lg text-center interactive-card" onclick="document.getElementById('case-study-dasalla').scrollIntoView();">
-                        <p class="text-lg font-semibold text-slate-300">Inventory Return Authorized</p>
-                        <p class="text-5xl font-extrabold" style="color: #ef5675;" data-target-value="300000">0</p>
-                        <p class="text-slate-400 mt-1">to improve cash flow</p>
-                    </div>
-                </div>
-            </div>
+<!-- ================= MARQUEE ================= -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="mtrack">
+    <span>Salesforce</span><span>HubSpot</span><span>Velocify</span><span>SQL</span><span>PostgreSQL</span><span>BigQuery</span><span>R</span><span>Python</span><span>Tableau</span><span>Power BI</span><span>Looker</span><span>Excel</span><span>Google Sheets</span>
+  </div>
+</div>
 
-            <div class="stat-card lg:col-span-1 md:col-span-2 fade-in-up" style="transition-delay: 300ms;">
-                <h2 class="text-2xl font-bold text-white mb-1">Consistent Over-Performance</h2>
-                <p class="text-slate-300 mb-4">A track record of exceeding targets across different roles and companies.</p>
-                <div class="chart-container mt-auto">
-                    <canvas id="performanceBarChart"></canvas>
-                </div>
-            </div>
+<!-- ================= NUMBERS ================= -->
+<section id="numbers">
+  <div class="wrap">
+    <div class="sec-label rv">Track record</div>
+    <h2 class="sec-title rv d1">The numbers do the <em>first pitch.</em></h2>
 
-            <!-- Case Studies -->
-            <div id="case-study-gst" class="stat-card md:col-span-2 lg:col-span-3 fade-in-up interactive-card">
-                <h2 class="text-2xl font-bold text-white mb-1">Case Study: Driving Growth at Green Solar Technologies</h2>
-                <p class="text-slate-300 mb-6">As a Sales Development Representative, I utilized CRM data to create highly effective, targeted sales campaigns.</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>1. Analysis</h3>
-                        <p class="text-slate-300">Leveraged Velocify CRM to analyze lead data and identify high-potential prospects for targeted energy solution consulting.</p>
-                    </div>
-                    <div class="flow-arrow hidden md:block">&#10230;</div>
-                    <div class="flow-arrow md:hidden">&#11167;</div>
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>2. Action</h3>
-                        <p class="text-slate-300">Executed strategic email and phone campaigns, focusing on a consultative sales approach to address specific client needs.</p>
-                    </div>
-                    <div class="flow-arrow hidden md:block">&#10230;</div>
-                    <div class="flow-arrow md:hidden">&#11167;</div>
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>3. Outcome</h3>
-                        <p class="text-slate-300">Generated <strong class="text-amber-400">$720,000 in revenue</strong> and consistently exceeded monthly quotas by <strong class="text-amber-400">150%</strong>, demonstrating significant ROI.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="case-study-spectrum" class="stat-card md:col-span-2 lg:col-span-3 fade-in-up interactive-card">
-                <h2 class="text-2xl font-bold text-white mb-1">Case Study: Maximizing Sales at Spectrum</h2>
-                <p class="text-slate-300 mb-6">As a Customer Sales Representative, I focused on data analysis to refine sales strategies and boost performance.</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>1. Analysis</h3>
-                        <p class="text-slate-300">Performed analysis of customer needs and historical buying patterns to identify upselling opportunities and refine sales tactics.</p>
-                    </div>
-                    <div class="flow-arrow hidden md:block">&#10230;</div>
-                    <div class="flow-arrow md:hidden">&#11167;</div>
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>2. Action</h3>
-                        <p class="text-slate-300">Employed a consultative selling process to acquire over <strong class="text-amber-400">60 new accounts monthly</strong>, tailoring solutions to individual customer requirements.</p>
-                    </div>
-                    <div class="flow-arrow hidden md:block">&#10230;</div>
-                    <div class="flow-arrow md:hidden">&#11167;</div>
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>3. Outcome</h3>
-                        <p class="text-slate-300">Sustained a <strong class="text-amber-400">120% quota achievement rate</strong> and increased customer satisfaction and retention through strong relationship building.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="case-study-dasalla" class="stat-card md:col-span-2 lg:col-span-3 fade-in-up interactive-card">
-                <h2 class="text-2xl font-bold text-white mb-1">Case Study: Product Management at Dasalla Trading</h2>
-                <p class="text-slate-300 mb-6">As a Product Manager, I applied a data-driven process to enhance operational and financial efficiency.</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>1. Analysis</h3>
-                        <p class="text-slate-300">Conducted granular analysis of inventory data for a <strong class="text-amber-400">$2M product line</strong> across multiple E-Commerce platforms.</p>
-                    </div>
-                    <div class="flow-arrow hidden md:block">&#10230;</div>
-                    <div class="flow-arrow md:hidden">&#11167;</div>
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>2. Action</h3>
-                        <p class="text-slate-300">Pinpointed key inefficiencies, leading to a strategic decision to authorize a <strong class="text-amber-400">$300,000 inventory return</strong>.</p>
-                    </div>
-                    <div class="flow-arrow hidden md:block">&#10230;</div>
-                    <div class="flow-arrow md:hidden">&#11167;</div>
-                    <div class="flow-step pl-4">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2 justify-center md:justify-start"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>3. Outcome</h3>
-                        <p class="text-slate-300">Streamlined operations, boosted sales performance, and significantly <strong class="text-amber-400">improved cash flow</strong> for the business.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Toolkits -->
-            <div class="stat-card lg:col-span-3 fade-in-up">
-                <h2 class="text-2xl font-bold text-white mb-4 text-center">Technical Toolkit</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <div class="bg-custom-grey p-6 rounded-lg">
-                        <h3 class="text-xl font-bold text-white mb-3 text-center flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                            Visualization
-                        </h3>
-                        <ul class="space-y-2 text-slate-300 text-center">
-                            <li><a href="https://www.tableau.com/" target="_blank" rel="noopener noreferrer" class="toolkit-link">Tableau</a></li>
-                            <li><a href="https://powerbi.microsoft.com/" target="_blank" rel="noopener noreferrer" class="toolkit-link">Power BI</a></li>
-                            <li><a href="https://looker.google.com/" target="_blank" rel="noopener noreferrer" class="toolkit-link">Looker</a></li>
-                        </ul>
-                    </div>
-                    <div class="bg-custom-grey p-6 rounded-lg">
-                        <h3 class="text-xl font-bold text-white mb-3 text-center flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-                            Languages
-                        </h3>
-                        <ul class="space-y-2 text-slate-300 text-center">
-                            <li><a href="https://www.python.org/" target="_blank" rel="noopener noreferrer" class="toolkit-link">Python</a></li>
-                            <li><a href="https://www.r-project.org/" target="_blank" rel="noopener noreferrer" class="toolkit-link">R</a></li>
-                            <li><a href="https://en.wikipedia.org/wiki/SQL" target="_blank" rel="noopener noreferrer" class="toolkit-link">SQL</a></li>
-                        </ul>
-                    </div>
-                    <div class="bg-custom-grey p-6 rounded-lg">
-                        <h3 class="text-xl font-bold text-white mb-3 text-center flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7v10" /></svg>
-                            Databases
-                        </h3>
-                        <ul class="space-y-2 text-slate-300 text-center">
-                            <li><a href="https://www.postgresql.org/" target="_blank" rel="noopener noreferrer" class="toolkit-link">PostgreSQL</a></li>
-                            <li><a href="https://www.mysql.com/" target="_blank" rel="noopener noreferrer" class="toolkit-link">MySQL</a></li>
-                            <li><a href="https://cloud.google.com/bigquery" target="_blank" rel="noopener noreferrer" class="toolkit-link">BigQuery</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card lg:col-span-3 fade-in-up">
-                <h2 class="text-2xl font-bold text-white mb-4 text-center">Sales & Recruitment Skills</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <div class="bg-custom-grey p-6 rounded-lg">
-                        <h3 class="text-xl font-bold text-white mb-3 text-center flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            Prospecting & Outreach
-                        </h3>
-                        <ul class="space-y-2 text-slate-300 text-center">
-                            <li>CRM Proficiency (Velocify)</li>
-                            <li>Lead Generation & Qualification</li>
-                            <li>Social Selling</li>
-                            <li>Strategic Cold Calling</li>
-                            <li>Targeted Email Campaigns</li>
-                        </ul>
-                    </div>
-                    <div class="bg-custom-grey p-6 rounded-lg">
-                        <h3 class="text-xl font-bold text-white mb-3 text-center flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                            Sales & Negotiation
-                        </h3>
-                        <ul class="space-y-2 text-slate-300 text-center">
-                            <li>Consultative Sales Methodologies</li>
-                            <li>Relationship Building & Trust</li>
-                            <li>Consistent Quota Attainment</li>
-                            <li>Upselling & Closing Techniques</li>
-                            <li>Contract Negotiation</li>
-                        </ul>
-                    </div>
-                    <div class="bg-custom-grey p-6 rounded-lg">
-                        <h3 class="text-xl font-bold text-white mb-3 text-center flex items-center justify-center gap-2">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                            Client & Candidate Management
-                        </h3>
-                        <ul class="space-y-2 text-slate-300 text-center">
-                            <li>Client Retention Strategies</li>
-                            <li>In-depth Needs Analysis</li>
-                            <li>Sales Pipeline Management</li>
-                            <li>Candidate/Client Onboarding</li>
-                            <li>Cross-functional Communication</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stat-card md:col-span-2 lg:col-span-3 fade-in-up text-center">
-                <h2 class="text-2xl font-bold text-white mb-4">Let's Connect</h2>
-                <p class="text-slate-300 mb-6 max-w-2xl mx-auto">I'm excited to apply my skills to new challenges. If you're looking for a data-driven professional who consistently exceeds expectations, I'd love to hear from you.</p>
-                 <div class="flex justify-center items-center gap-6 mt-4">
-                    <a href="mailto:zacharybhenley@gmail.com" class="text-slate-400 hover:text-amber-400 transition-all transform hover:scale-110" title="Email">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                    </a>
-                    <a href="https://www.linkedin.com/in/zachary-henley" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-amber-400 transition-all transform hover:scale-110" title="LinkedIn">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                    </a>
-                    <a href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-amber-400 transition-all transform hover:scale-110" title="Kaggle">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12.2,16.2l-3.8-3.8l3.8-3.8l1.2,1.2l-2.6,2.6l2.6,2.6L12.2,16.2z M18,12l-6,6l-1.2-1.2l4.8-4.8l-4.8-4.8L12,6L18,12z"/></svg>
-                    </a>
-                </div>
-            </div>
-
-        </main>
+    <div class="stats-grid rv d2">
+      <div class="stat">
+        <div class="stat-num" data-count="720" data-prefix="$" data-suffix="K">$0K</div>
+        <div class="stat-label">Revenue generated in 9 months as an SDR</div>
+        <div class="stat-src">Green Solar Technologies</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-count="150" data-suffix="%">0%</div>
+        <div class="stat-label">Average monthly quota attainment</div>
+        <div class="stat-src">Green Solar Technologies</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-count="60" data-suffix="+">0+</div>
+        <div class="stat-label">New accounts closed per month</div>
+        <div class="stat-src">Spectrum</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-count="300" data-prefix="$" data-suffix="K">$0K</div>
+        <div class="stat-label">Dead stock found &amp; recovered via data analysis</div>
+        <div class="stat-src">Dasalla Trading Co.</div>
+      </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Intersection Observer for Fade-in Animations ---
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, { threshold: 0.1 });
+    <div class="charts-row">
+      <!-- Chart 1: quota attainment vs target -->
+      <div class="chart-card rv">
+        <h3>Quota attainment vs. target</h3>
+        <div class="chart-sub">Average monthly attainment, full tenure · target = 100%</div>
+        <svg id="quotaChart" viewBox="0 0 520 190" role="img" aria-label="Bar chart: Green Solar Technologies 150 percent and Spectrum 120 percent average monthly quota attainment, against a 100 percent target line."></svg>
+      </div>
+      <!-- Chart 2: portfolio proportion -->
+      <div class="chart-card rv d1">
+        <h3>Finding the dead weight</h3>
+        <div class="chart-sub">$2.0M inventory portfolio analyzed at Dasalla Trading</div>
+        <svg id="portChart" viewBox="0 0 420 190" role="img" aria-label="Proportion chart: 300 thousand dollars of non-performing stock identified within a 2 million dollar portfolio — 15 percent."></svg>
+      </div>
+    </div>
+  </div>
+</section>
 
-            const fadeUpElements = document.querySelectorAll('.fade-in-up');
-            fadeUpElements.forEach(el => observer.observe(el));
-            
-            // --- Animated Number Counter ---
-            const counterObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const el = entry.target;
-                        const targetValue = parseInt(el.getAttribute('data-target-value'), 10);
-                        animateCount(el, targetValue);
-                        observer.unobserve(el);
-                    }
-                });
-            }, { threshold: 0.5 });
+<!-- ================= METHOD (pinned scrollytelling) ================= -->
+<section id="method">
+  <div class="pin-outer" id="pinOuter">
+    <div class="pin-stage">
+      <div class="pin-bg"></div>
+      <div class="wrap pin-inner">
+        <div class="sec-label">How I work</div>
+        <div class="step-words">
+          <div class="step" data-step="0">
+            <div class="step-index">01 / 03</div>
+            <h3>Prospect.</h3>
+            <p>Not spray-and-pray. I mine CRM data to rank leads by <strong>likelihood to close</strong>, and build target lists that make every call count.</p>
+          </div>
+          <div class="step" data-step="1">
+            <div class="step-index">02 / 03</div>
+            <h3>Analyze.</h3>
+            <p>Conversion rates, outreach volume, win patterns — tracked weekly in <strong>SQL and spreadsheets</strong>, reported to leadership in plain English.</p>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-index">03 / 03</div>
+            <h3>Close.</h3>
+            <p>Consultative, not pushy. Diagnose what the client actually needs, match it to the right solution — <strong>150% of quota</strong> follows.</p>
+          </div>
+        </div>
+        <div class="step-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="pin-sentinel" data-for="0" style="position:absolute;top:0;height:33.3%;width:1px;"></div>
+    <div class="pin-sentinel" data-for="1" style="position:absolute;top:33.3%;height:33.3%;width:1px;"></div>
+    <div class="pin-sentinel" data-for="2" style="position:absolute;top:66.6%;height:33.4%;width:1px;"></div>
+  </div>
+</section>
 
-            document.querySelectorAll('[data-target-value]').forEach(el => {
-                counterObserver.observe(el);
-            });
+<!-- ================= EXPERIENCE ================= -->
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-label rv">Experience</div>
+    <h2 class="sec-title rv d1">Four roles, one thread: <em>data-driven revenue.</em></h2>
 
-            function animateCount(el, target) {
-                let start = 0;
-                const duration = 2000; // 2 seconds
-                const stepTime = Math.abs(Math.floor(duration / target));
-                
-                let current = 0;
-                const timer = setInterval(() => {
-                    current += Math.ceil(target / (duration / 16));
-                    if (current >= target) {
-                        clearInterval(timer);
-                        current = target;
-                    }
-                    el.innerText = '$' + current.toLocaleString('en-US');
-                }, 16);
-            }
+    <div class="xp-list">
+      <article class="xp-card rv" data-spotlight>
+        <div class="xp-meta">
+          <div class="xp-index">01</div>
+          <div class="xp-dates">Aug 2019<br>— Apr 2020</div>
+        </div>
+        <div class="xp-body">
+          <h3>Sales Development Representative</h3>
+          <div class="co">Green Solar Technologies · Los Angeles</div>
+          <ul>
+            <li>Full-cycle consultative sales — prospecting, tailored solution presentations, closing — contributing to <strong>$720,000 in revenue at 150% of monthly quota</strong>.</li>
+            <li>Mined Velocify CRM data to rank high-potential leads and build <strong>data-driven target lists</strong> across 100+ active opportunities.</li>
+            <li>Delivered weekly performance reports to leadership — outreach volume, conversion rates, revenue attainment — as clear, actionable insight.</li>
+          </ul>
+          <div class="xp-tags"><span>Consultative selling</span><span>CRM analytics</span><span>KPI reporting</span></div>
+        </div>
+      </article>
 
-            // --- Typewriter Effect ---
-            const subtitle = "From Business Strategy to Data-Driven Success";
-            const subtitleElement = document.getElementById('animated-subtitle');
-            let i = 0;
-            function typeWriter() {
-                if (i < subtitle.length) {
-                    subtitleElement.innerHTML = subtitle.substring(0, i + 1) + '<span id="subtitle-cursor">|</span>';
-                    i++;
-                    setTimeout(typeWriter, 60);
-                } else {
-                     subtitleElement.innerHTML = subtitle;
-                     document.getElementById('subtitle-cursor')?.remove();
-                }
-            }
-            typeWriter();
-            
-            // --- Mouse-Following Gradient ---
-            const interactiveBg = document.getElementById('interactive-bg');
-            window.addEventListener('mousemove', (e) => {
-                const { clientX, clientY } = e;
-                const x = Math.round((clientX / window.innerWidth) * 100);
-                const y = Math.round((clientY / window.innerHeight) * 100);
-                interactiveBg.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255, 174, 66, 0.1), transparent 40%)`;
-            });
+      <article class="xp-card rv" data-spotlight>
+        <div class="xp-meta">
+          <div class="xp-index">02</div>
+          <div class="xp-dates">Mar 2019<br>— Aug 2019</div>
+        </div>
+        <div class="xp-body">
+          <h3>Customer Sales Representative</h3>
+          <div class="co">Spectrum (Charter Communications) · Los Angeles</div>
+          <ul>
+            <li>Matched clients to tailored technology solutions — <strong>60+ new accounts monthly at 120% quota attainment</strong>.</li>
+            <li>Ran requirements gathering to recommend <strong>data-backed service solutions</strong>, lifting satisfaction and retention.</li>
+            <li>Owned the client relationship through onboarding; delivered weekly KPI summaries to management.</li>
+          </ul>
+          <div class="xp-tags"><span>Solution selling</span><span>Onboarding</span><span>KPI tracking</span></div>
+        </div>
+      </article>
 
-            // --- Interactive Charts ---
-            const revenueLineCtx = document.getElementById('revenueLineChart').getContext('2d');
-            const gradient = revenueLineCtx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(255, 166, 0, 0.6)');
-            gradient.addColorStop(1, 'rgba(255, 166, 0, 0.05)');
+      <article class="xp-card rv" data-spotlight>
+        <div class="xp-meta">
+          <div class="xp-index">03</div>
+          <div class="xp-dates">Sep 2016<br>— Aug 2018</div>
+        </div>
+        <div class="xp-body">
+          <h3>Operations Manager</h3>
+          <div class="co">Senvicare · Los Angeles</div>
+          <ul>
+            <li>Coordinated <strong>complex multi-site field operations</strong> across Greater LA — scheduling, conflict resolution, compliance records.</li>
+            <li>Streamlined reporting workflows with leadership; trained staff on documentation standards, enabling <strong>data-driven decisions</strong> team-wide.</li>
+          </ul>
+          <div class="xp-tags"><span>Stakeholder management</span><span>Reporting systems</span><span>Process design</span></div>
+        </div>
+      </article>
 
-            new Chart(revenueLineCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Q3 2019', 'Q4 2019', 'Q1 2020'],
-                    datasets: [{
-                        label: 'Quarterly Revenue ($)',
-                        data: [170000, 280000, 270000],
-                        backgroundColor: gradient,
-                        borderColor: 'rgba(255, 166, 0, 1)',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: 'rgba(255, 166, 0, 1)',
-                        pointHoverBackgroundColor: 'rgba(255, 166, 0, 1)',
-                        pointHoverBorderColor: '#fff',
-                        pointRadius: 5,
-                        pointHoverRadius: 8,
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#f1f5f9', callback: (value) => '$' + value / 1000 + 'k' },
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
-                        },
-                        x: {
-                            ticks: { color: '#f1f5f9', font: { size: 14, weight: '600' } },
-                            grid: { display: false }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: 'Quarterly Revenue Growth ($720k Total)', color: '#ffffff', font: { size: 18, weight: 'bold' }, padding: { top: 10, bottom: 20 } },
-                        tooltip: { 
-                            backgroundColor: 'rgba(10, 10, 10, 0.8)',
-                            titleFont: { size: 16, weight: 'bold' },
-                            bodyFont: { size: 14 },
-                            padding: 12,
-                            cornerRadius: 8,
-                            callbacks: { 
-                                label: (context) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y)
-                             } 
-                        }
-                    }
-                }
-            });
+      <article class="xp-card rv" data-spotlight>
+        <div class="xp-meta">
+          <div class="xp-index">04</div>
+          <div class="xp-dates">May 2014<br>— Aug 2016</div>
+        </div>
+        <div class="xp-body">
+          <h3>Inventory Manager</h3>
+          <div class="co">Dasalla Trading Company · Los Angeles</div>
+          <ul>
+            <li>Ran B2B and e-commerce partnerships across Amazon, Shopify, and Houzz — a <strong>$2,000,000 product portfolio</strong> with analysis and forecasting.</li>
+            <li>Identified <strong>$300,000 in non-performing stock</strong> through structured analysis; presented findings to leadership in executive-ready format.</li>
+          </ul>
+          <div class="xp-tags"><span>B2B relationships</span><span>Inventory analytics</span><span>Forecasting</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
 
-            const performanceBarCtx = document.getElementById('performanceBarChart').getContext('2d');
-            new Chart(performanceBarCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Green Solar Tech', 'Charter Comms'],
-                    datasets: [{
-                        label: 'Quota Exceeded By (%)',
-                        data: [150, 120],
-                        backgroundColor: ['rgba(239, 86, 117, 0.7)', 'rgba(188, 80, 144, 0.7)'],
-                        borderColor: ['rgba(239, 86, 117, 1)', 'rgba(188, 80, 144, 1)'],
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        barThickness: 50,
-                        hoverBackgroundColor: ['rgba(239, 86, 117, 1)', 'rgba(188, 80, 144, 1)']
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#f1f5f9', font: { size: 14 } } },
-                        y: { grid: { display: false }, ticks: { color: '#f1f5f9', font: { size: 14, weight: '600' } } }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: 'Monthly Quota Performance', color: '#ffffff', font: { size: 18, weight: 'bold' }, padding: { top: 10, bottom: 20 } },
-                        tooltip: { 
-                            backgroundColor: 'rgba(10, 10, 10, 0.8)',
-                            titleFont: { size: 16, weight: 'bold' },
-                            bodyFont: { size: 14 },
-                            padding: 12,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: (context) => `${context.dataset.label}: ${context.parsed.x}%`
-                            }
-                        }
-                    }
-                }
-            });
-        });
-    </script>
+<!-- ================= SKILLS ================= -->
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-label rv">Toolkit</div>
+    <h2 class="sec-title rv d1">Two toolkits. <em>One job:</em> growing revenue.</h2>
+
+    <div class="tabs rv d2" role="tablist" aria-label="Skill categories">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="p-sell" id="t-sell">Selling</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-data" id="t-data">Analytics</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-tools" id="t-tools">Platforms</button>
+    </div>
+
+    <div class="panel active" id="p-sell" role="tabpanel" aria-labelledby="t-sell">
+      <div class="skill-chip"><b>Consultative Selling</b><small>Needs-first discovery, solution matching, long-term relationships.</small><span class="endorse">10 LinkedIn endorsements</span></div>
+      <div class="skill-chip"><b>Strategic Prospecting</b><small>Targeted, data-informed outreach that ranks leads before dialing.</small><span class="endorse">9 LinkedIn endorsements</span></div>
+      <div class="skill-chip"><b>Full-Cycle Sales</b><small>Prospect → present → negotiate → close → onboard.</small></div>
+      <div class="skill-chip"><b>Pipeline Management</b><small>100+ concurrent opportunities tracked with process discipline.</small></div>
+      <div class="skill-chip"><b>Stakeholder Management</b><small>Alignment across clients, internal teams, and leadership.</small></div>
+      <div class="skill-chip"><b>Pricing &amp; Market Research</b><small>Positioning offers with competitive and market context.</small></div>
+    </div>
+
+    <div class="panel" id="p-data" role="tabpanel" aria-labelledby="t-data" hidden>
+      <div class="skill-chip"><b>SQL</b><small>PostgreSQL, MySQL, Google BigQuery — querying and joining real datasets.</small><span class="endorse">Google-certified</span></div>
+      <div class="skill-chip"><b>R</b><small>RStudio and tidyverse workflows for cleaning and analysis.</small><span class="endorse">Google-certified</span></div>
+      <div class="skill-chip"><b>Python</b><small>Data cleaning and exploratory analysis.</small><span class="endorse">5 LinkedIn endorsements</span></div>
+      <div class="skill-chip"><b>Statistical Analysis</b><small>From descriptive summaries to pattern-finding that changes strategy.</small></div>
+      <div class="skill-chip"><b>Data Storytelling</b><small>Executive-ready findings — the analysis is only as good as the telling.</small></div>
+      <div class="skill-chip"><b>KPI Development</b><small>Defining and tracking the metrics that actually predict revenue.</small></div>
+    </div>
+
+    <div class="panel" id="p-tools" role="tabpanel" aria-labelledby="t-tools" hidden>
+      <div class="skill-chip"><b>Tableau · Power BI · Looker</b><small>Dashboards and reports leadership actually reads.</small></div>
+      <div class="skill-chip"><b>Salesforce · HubSpot · Velocify</b><small>CRM as a data source, not just a logbook.</small></div>
+      <div class="skill-chip"><b>Excel &amp; Google Sheets</b><small>Advanced formulas, pivot analysis, spreadsheet modeling.</small></div>
+      <div class="skill-chip"><b>Google Workspace &amp; MS Office</b><small>Docs, Slides, PowerPoint — polished client-facing collateral.</small></div>
+      <div class="skill-chip"><b>Slack</b><small>Cross-functional collaboration at speed.</small></div>
+      <div class="skill-chip"><b>Amazon · Shopify · Houzz</b><small>E-commerce operations across marketplace platforms.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EDUCATION ================= -->
+<section id="education">
+  <div class="wrap">
+    <div class="sec-label rv">Credentials</div>
+    <h2 class="sec-title rv d1">The paper behind <em>the practice.</em></h2>
+    <div class="edu-grid">
+      <div class="edu-card rv"><span class="tag">Certificate — 2025</span><h3>Google Data Analytics Professional Certificate</h3><p>SQL · R · Tableau · data cleaning · statistical analysis · visualization</p></div>
+      <div class="edu-card rv d1"><span class="tag">Certificate</span><h3>Public Policy and Leadership</h3><p>The Leadership Institute</p></div>
+      <div class="edu-card rv d2"><span class="tag">B.A.</span><h3>Liberal Arts and Sciences</h3><p>California State University, Long Beach</p></div>
+      <div class="edu-card rv d3"><span class="tag">A.A. ×3</span><h3>Economics · Political Science · Social &amp; Behavioral Science</h3><p>Pierce College &amp; West LA College · Dean's List, 4.0 GPA</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="wrap rv">
+    <div class="big">Let's talk<br><em>revenue.</em></div>
+    <p class="lede">If you're building a data-driven sales team, I'd love to show you what a pipeline looks like when someone treats it as a dataset.</p>
+    <div class="contact-row">
+      <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>zacharybhenley@gmail.com</a>
+      <a class="btn btn-line" href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener" data-magnet>Connect on LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Zachary Henley — Los Angeles, CA</span>
+  <div class="foot-links">
+    <a href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/zbhenley" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener">Kaggle</a>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const io = 'IntersectionObserver' in window;
+
+  /* ---------- marquee: duplicate items for seamless loop (safe DOM cloning) ---------- */
+  const mtrack = document.getElementById('mtrack');
+  if (mtrack) {
+    [...mtrack.children].forEach(node => mtrack.appendChild(node.cloneNode(true)));
+  }
+
+  /* ---------- scroll progress + nav behavior ---------- */
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+  let lastY = 0;
+  addEventListener('scroll', () => {
+    const y = scrollY;
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+    nav.classList.toggle('scrolled', y > 40);
+    nav.classList.toggle('hidden', y > 500 && y > lastY);
+    lastY = y;
+  }, { passive: true });
+
+  /* ---------- reveal on scroll (opt-in so no-JS still shows content) ---------- */
+  if (io && !reduceMotion) {
+    document.documentElement.classList.add('js-anim');
+    const rvObs = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); rvObs.unobserve(e.target); } });
+    }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
+    document.querySelectorAll('.rv').forEach(el => rvObs.observe(el));
+  }
+
+  /* ---------- count-up stat tiles ---------- */
+  const fmt = (el, v) => (el.dataset.prefix || '') + Math.round(v) + (el.dataset.suffix || '');
+  const runCount = (el) => {
+    const target = +el.dataset.count, dur = 1400, t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      el.textContent = fmt(el, target * (1 - Math.pow(1 - p, 3)));   // ease-out cubic
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const nums = document.querySelectorAll('[data-count]');
+  if (io && !reduceMotion) {
+    const nObs = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) { runCount(e.target); nObs.unobserve(e.target); } });
+    }, { threshold: 0.6 });
+    nums.forEach(el => nObs.observe(el));
+  } else {
+    nums.forEach(el => el.textContent = fmt(el, +el.dataset.count));
+  }
+
+  /* ---------- tooltip (built with textContent — no HTML injection) ---------- */
+  const tooltip = document.getElementById('tooltip');
+  const showTip = (title, body, x, y) => {
+    tooltip.replaceChildren();
+    const b = document.createElement('b');
+    b.textContent = title;
+    tooltip.appendChild(b);
+    tooltip.appendChild(document.createTextNode(body));
+    tooltip.style.left = Math.min(x + 14, innerWidth - 280) + 'px';
+    tooltip.style.top = (y + 16) + 'px';
+    tooltip.classList.add('show');
+  };
+  const hideTip = () => tooltip.classList.remove('show');
+
+  /* ---------- charts (plain SVG, single hue, direct labels, tooltips) ---------- */
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  };
+  const txt = (attrs, content) => { const t = el('text', attrs); t.textContent = content; return t; };
+
+  /* Chart 1 — quota attainment: horizontal bars vs 100% target */
+  (() => {
+    const svg = document.getElementById('quotaChart');
+    if (!svg) return;
+    const data = [
+      { co: 'Green Solar', val: 150, tipTitle: 'Green Solar Technologies', tipBody: '150% average monthly quota · $720K revenue contributed over 9 months' },
+      { co: 'Spectrum', val: 120, tipTitle: 'Spectrum', tipBody: '120% average monthly quota · 60+ new accounts closed per month' },
+    ];
+    const X0 = 96, XW = 380, rowH = 56, top = 26, max = 160, barH = 16;
+    const x = v => X0 + (v / max) * XW;
+    [0, 50, 100, 150].forEach(v => {
+      svg.appendChild(el('line', { x1: x(v), x2: x(v), y1: top - 12, y2: top + rowH * 2, class: v === 100 ? 'target-line' : 'grid-line' }));
+      svg.appendChild(txt({ x: x(v), y: top + rowH * 2 + 20, 'text-anchor': 'middle', class: 'ax-label' }, v + '%'));
+    });
+    svg.appendChild(txt({ x: x(100), y: top - 18, 'text-anchor': 'middle', class: 'ax-label' }, 'target'));
+    data.forEach((d, i) => {
+      const y = top + i * rowH + (rowH - barH) / 2 - 8;
+      svg.appendChild(txt({ x: X0 - 12, y: y + barH / 2 + 4.5, 'text-anchor': 'end', class: 'cat-label' }, d.co));
+      svg.appendChild(el('rect', { x: X0, y, width: XW, height: barH, rx: 4, class: 'bar-track' }));
+      const bar = el('rect', {
+        x: X0, y, width: 0, height: barH, rx: 4, fill: 'var(--chart-hue)',
+        class: 'bar-rect', tabindex: 0, 'aria-label': d.co + ': ' + d.val + '% of quota',
+      });
+      bar.style.transition = 'width 1.1s cubic-bezier(0.22,1,0.36,1) ' + (0.15 + i * 0.12) + 's';
+      svg.appendChild(bar);
+      const val = txt({ x: x(d.val) + 9, y: y + barH / 2 + 4.5, class: 'val-label' }, d.val + '%');
+      val.style.opacity = 0; val.style.transition = 'opacity 0.4s ease ' + (1.1 + i * 0.12) + 's';
+      svg.appendChild(val);
+      const onMove = (ev) => showTip(d.tipTitle, d.tipBody, ev.clientX, ev.clientY);
+      const onFocus = () => { const r = bar.getBoundingClientRect(); showTip(d.tipTitle, d.tipBody, r.right, r.top); };
+      bar.addEventListener('pointermove', onMove);
+      bar.addEventListener('focus', onFocus);
+      bar.addEventListener('pointerleave', hideTip);
+      bar.addEventListener('blur', hideTip);
+      d._bar = bar; d._val = val;
+    });
+    const animate = () => data.forEach(d => { d._bar.setAttribute('width', (d.val / max) * XW); d._val.style.opacity = 1; });
+    if (io && !reduceMotion) {
+      const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { animate(); o.disconnect(); } }, { threshold: 0.4 });
+      o.observe(svg);
+    } else animate();
+  })();
+
+  /* Chart 2 — $300K of $2M portfolio: proportion bar */
+  (() => {
+    const svg = document.getElementById('portChart');
+    if (!svg) return;
+    const X0 = 10, XW = 400, y = 64, barH = 34, frac = 300 / 2000;
+    svg.appendChild(el('rect', { x: X0, y, width: XW, height: barH, rx: 6, class: 'bar-track' }));
+    const seg = el('rect', { x: X0, y, width: 0, height: barH, rx: 6, fill: 'var(--chart-hue)', class: 'bar-rect', tabindex: 0, 'aria-label': '$300K non-performing stock identified, 15% of a $2M portfolio' });
+    seg.style.transition = 'width 1.2s cubic-bezier(0.22,1,0.36,1) 0.2s';
+    svg.appendChild(seg);
+    svg.appendChild(txt({ x: X0, y: y - 16, class: 'val-label' }, '$300K identified'));
+    svg.appendChild(txt({ x: X0 + XW, y: y - 16, 'text-anchor': 'end', class: 'ax-label' }, '$2.0M portfolio'));
+    svg.appendChild(txt({ x: X0, y: y + barH + 28, class: 'ax-label' }, '15% of inventory was dead weight. The analysis found it; leadership approved the return.'));
+    const tipTitle = 'Dasalla Trading Co.';
+    const tipBody = '$300,000 in non-performing stock identified through structured analysis — 15% of the $2M portfolio — and returned to improve cash flow.';
+    seg.addEventListener('pointermove', (ev) => showTip(tipTitle, tipBody, ev.clientX, ev.clientY));
+    seg.addEventListener('focus', () => { const r = seg.getBoundingClientRect(); showTip(tipTitle, tipBody, r.right, r.top); });
+    seg.addEventListener('pointerleave', hideTip);
+    seg.addEventListener('blur', hideTip);
+    const animate = () => seg.setAttribute('width', frac * XW);
+    if (io && !reduceMotion) {
+      const o = new IntersectionObserver((es) => { if (es[0].isIntersecting) { animate(); o.disconnect(); } }, { threshold: 0.4 });
+      o.observe(svg);
+    } else animate();
+  })();
+
+  /* ---------- pinned scrollytelling ---------- */
+  const steps = document.querySelectorAll('.step');
+  const dots = document.querySelectorAll('.step-dots i');
+  const setStep = (i) => {
+    steps.forEach((s, j) => s.classList.toggle('active', j === i));
+    dots.forEach((d, j) => d.classList.toggle('active', j === i));
+  };
+  if (io) {
+    const sObs = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) setStep(+e.target.dataset.for); });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.pin-sentinel').forEach(s => sObs.observe(s));
+    setStep(0);
+  } else {
+    document.getElementById('method').classList.add('no-anim');
+  }
+
+  /* ---------- spotlight cards ---------- */
+  document.querySelectorAll('[data-spotlight]').forEach(card => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  /* ---------- magnetic buttons ---------- */
+  if (!reduceMotion) {
+    document.querySelectorAll('[data-magnet]').forEach(btn => {
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+        btn.style.transform = `translate(${dx * 0.14}px, ${dy * 0.22}px)`;
+      });
+      btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+    });
+  }
+
+  /* ---------- skills tabs ---------- */
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.setAttribute('aria-selected', t === tab));
+      panels.forEach(p => {
+        const active = p.id === tab.getAttribute('aria-controls');
+        p.classList.toggle('active', active);
+        p.hidden = !active;
+      });
+    });
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const next = (i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+        tabs[next].focus(); tabs[next].click();
+      }
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
