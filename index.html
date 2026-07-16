@@ -214,59 +214,6 @@
   }
   @keyframes cue { 50% { transform: scaleY(0.55); transform-origin: top; } }
 
-  /* ---------- hero product shot: floating glass KPI cluster ---------- */
-  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
-  @media (min-width: 1021px) {
-    .hero h1 { font-size: clamp(2.9rem, 4.9vw, 5rem); }
-  }
-  @media (max-width: 1020px) { .hero-grid { grid-template-columns: 1fr; } .hero-visual { display: none; } }
-  .hero-visual { perspective: 1400px; }
-  .hv-scene {
-    position: relative; width: min(400px, 100%); margin: 0 auto;
-    transform-style: preserve-3d;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .hv-card { border-radius: 22px; }
-  .hv-main { position: relative; padding: 28px 28px 24px; animation: bob 7s ease-in-out infinite; }
-  .hv-label { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); }
-  .hv-num {
-    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em;
-    font-size: 3.4rem; line-height: 1.1; margin: 6px 0 18px;
-    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .hv-bars { position: relative; display: grid; gap: 14px; padding-right: 6px; }
-  .hv-row { display: grid; gap: 5px; }
-  .hv-row b { font-size: 0.8rem; font-weight: 600; color: var(--ink-2); }
-  .hv-track { height: 10px; border-radius: 5px; background: rgba(29,29,31,0.08); overflow: hidden; }
-  .hv-fill {
-    display: block; height: 100%; width: var(--w); border-radius: 5px;
-    background: var(--grad);
-    transform: scaleX(0); transform-origin: left;
-    animation: hvfill 1.2s cubic-bezier(0.22,1,0.36,1) 0.9s forwards;
-  }
-  @keyframes hvfill { to { transform: scaleX(1); } }
-  .hv-target {
-    position: absolute; top: 0; bottom: 0; left: 62.5%; width: 0;
-    border-left: 1.5px dashed rgba(29,29,31,0.3);
-  }
-  .hv-foot { margin-top: 14px; font-size: 0.78rem; color: var(--ink-3); }
-  .hv-chip {
-    position: absolute; padding: 13px 20px; font-size: 0.92rem; font-weight: 600;
-    color: var(--ink); border-radius: 999px; white-space: nowrap;
-  }
-  .hv-chip .up { color: var(--mint); font-weight: 700; }
-  .hv-chip1 { top: -30px; right: -14px; animation: bob 6s ease-in-out 0.9s infinite; }
-  .hv-chip2 { bottom: -26px; left: -10px; animation: bob 8s ease-in-out 1.7s infinite; }
-  @keyframes bob { 50% { transform: translateY(-10px); } }
-  /* specular light sweep across the glass card */
-  .hv-main { overflow: hidden; }
-  .hv-main::after {
-    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    background: linear-gradient(105deg, transparent 42%, rgba(255,255,255,0.5) 50%, transparent 58%);
-    background-size: 260% 100%; background-position: 130% 0;
-    animation: sweep 6.5s ease-in-out infinite;
-  }
-  @keyframes sweep { 0%, 60% { background-position: 130% 0; } 90%, 100% { background-position: -60% 0; } }
 
   /* ============================================================
      MARQUEE
@@ -650,46 +597,20 @@
 <header class="hero" id="top">
   <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
   <div class="wrap hero-inner">
-    <div class="hero-grid">
-      <div>
-        <span class="hero-kicker">Open to Account Executive or Data Analyst roles — Los Angeles / Remote</span>
-        <h1>
-          <span class="word"><i>Sales&nbsp;</i></span><span class="word"><i>instinct,</i></span><br>
-          <span class="word"><i><em>analyst</em>&nbsp;</i></span><span class="word"><i><em>discipline.</em></i></span>
-        </h1>
-        <p class="hero-sub">
-          I&rsquo;m Zachary Henley. I&rsquo;ve beaten every quota I&rsquo;ve carried — <strong>150% at
-          Green Solar, 120% at Spectrum</strong> — by treating the pipeline like a dataset:
-          consultative selling, sharpened by <strong>SQL, R, Python, and Tableau</strong>.
-        </p>
-        <div class="hero-cta">
-          <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>Start a conversation</a>
-          <a class="btn btn-line" href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener" data-magnet>LinkedIn</a>
-          <a class="btn btn-line" href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener" data-magnet>Kaggle</a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="hv-scene" id="hvScene">
-          <div class="hv-card hv-main glass">
-            <div class="hv-label">Quota attainment</div>
-            <div class="hv-num">150%</div>
-            <div class="hv-bars">
-              <div class="hv-row">
-                <b>Green Solar</b>
-                <div class="hv-track"><span class="hv-fill" style="--w: 93.75%"></span></div>
-              </div>
-              <div class="hv-row">
-                <b>Spectrum</b>
-                <div class="hv-track"><span class="hv-fill" style="--w: 75%; animation-delay: 1.05s"></span></div>
-              </div>
-              <div class="hv-target"></div>
-            </div>
-            <div class="hv-foot">target = 100%</div>
-          </div>
-          <div class="hv-card hv-chip hv-chip1 glass" data-depth="26"><span class="up">↑</span>&nbsp;$720K revenue · 9 mos</div>
-          <div class="hv-card hv-chip hv-chip2 glass" data-depth="18"><span class="up">✓</span>&nbsp;SQL · R · Python · Tableau</div>
-        </div>
-      </div>
+    <span class="hero-kicker">Open to Account Executive or Data Analyst roles — Los Angeles / Remote</span>
+    <h1>
+      <span class="word"><i>Sales&nbsp;</i></span><span class="word"><i>instinct,</i></span><br>
+      <span class="word"><i><em>analyst</em>&nbsp;</i></span><span class="word"><i><em>discipline.</em></i></span>
+    </h1>
+    <p class="hero-sub">
+      I&rsquo;m Zachary Henley, a sales professional with a data analyst&rsquo;s toolkit.
+      I pair <strong>consultative selling</strong> with <strong>SQL, R, Python, and Tableau</strong>
+      to find the strongest opportunities in a pipeline — and close them.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>Start a conversation</a>
+      <a class="btn btn-line" href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener" data-magnet>LinkedIn</a>
+      <a class="btn btn-line" href="https://www.kaggle.com/zacharyhenley" target="_blank" rel="noopener" data-magnet>Kaggle</a>
     </div>
   </div>
   <div class="hero-scrollcue">Scroll</div>
@@ -754,7 +675,7 @@
 <!-- ================= STATEMENT (scroll-scrubbed word fill) ================= -->
 <section id="statement" aria-label="Personal statement">
   <div class="wrap">
-    <p class="stmt" id="stmtText">Most reps work the pipeline. I read it — and every quota I&rsquo;ve carried, <em>I&rsquo;ve beaten.</em></p>
+    <p class="stmt" id="stmtText">Every quota I&rsquo;ve carried, I&rsquo;ve exceeded — not by chance, but by turning pipeline data into <em>strategy.</em></p>
   </div>
 </section>
 
@@ -779,7 +700,7 @@
           <div class="step" data-step="2">
             <div class="step-index">03 / 03</div>
             <h3>Close.</h3>
-            <p>Consultative, not pushy. Diagnose what the client actually needs, match it to the right solution — <strong>150% of quota</strong> follows.</p>
+            <p>No scripts, no pressure. I diagnose what a client actually needs, match it to the right solution, and let the <strong>value do the closing</strong>.</p>
           </div>
         </div>
         <div class="step-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
@@ -796,10 +717,10 @@
 <section id="experience">
   <div class="wrap">
     <div class="sec-label rv">Experience</div>
-    <h2 class="sec-title rv d1">Four roles, one thread: <em>data-driven revenue.</em></h2>
+    <h2 class="sec-title rv d1">Four roles, one thread: <em>results built on data.</em></h2>
 
     <div class="chart-card rv d1" style="margin-top: 48px;">
-      <h3>Six years, four seats at the revenue table</h3>
+      <h3>Six years, four roles, one trajectory</h3>
       <div class="chart-sub">Hover a bar for the headline result from each role</div>
       <svg id="ganttChart" viewBox="0 0 640 210" role="img" aria-label="Career timeline chart, 2014 to 2020: Inventory Manager at DaSalla's 2014 to 2016, Operations Manager at Senvicare 2016 to 2018, Customer Sales Representative at Spectrum in 2019, Sales Development Representative at Green Solar Technologies 2019 to 2020."></svg>
     </div>
@@ -877,7 +798,7 @@
   <div class="wrap">
     <div class="sec-head center">
       <div class="sec-label rv">Toolkit</div>
-      <h2 class="sec-title rv d1">Two toolkits. <em>One job:</em> growing revenue.</h2>
+      <h2 class="sec-title rv d1">Two toolkits. <em>One job:</em> driving growth.</h2>
       <p class="sec-sub rv d2">Sales skills close the deal. Analytics skills find it, price it, and prove it worked.</p>
     </div>
 
@@ -909,7 +830,7 @@
         <div class="skill-chip"><b>Python</b><small>Data cleaning and exploratory analysis.</small><span class="endorse">5 LinkedIn endorsements</span></div>
         <div class="skill-chip"><b>Statistical Analysis</b><small>From descriptive summaries to pattern-finding that changes strategy.</small></div>
         <div class="skill-chip"><b>Data Storytelling</b><small>Executive-ready findings — the analysis is only as good as the telling.</small></div>
-        <div class="skill-chip"><b>KPI Development</b><small>Defining and tracking the metrics that actually predict revenue.</small></div>
+        <div class="skill-chip"><b>KPI Development</b><small>Defining and tracking the metrics that actually predict performance.</small></div>
       </div>
     </div>
 
@@ -950,8 +871,8 @@
 <!-- ================= CONTACT ================= -->
 <section id="contact">
   <div class="wrap rv">
-    <h2 class="big">Let&rsquo;s talk<br><em>revenue.</em></h2>
-    <p class="lede">Hiring for an Account Executive or analyst seat? In one call, I&rsquo;ll show you how I&rsquo;d work your pipeline like a dataset — and what that&rsquo;s worth in revenue.</p>
+    <h2 class="big">Let&rsquo;s put data<br><em>to work.</em></h2>
+    <p class="lede">Hiring for an Account Executive or Data Analyst role? I&rsquo;d welcome the conversation — and I&rsquo;ll come prepared with a point of view on your pipeline, not just a resume.</p>
     <div class="contact-row">
       <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>zacharybhenley@gmail.com</a>
       <a class="btn btn-line" href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener" data-magnet>Connect on LinkedIn</a>
@@ -1012,22 +933,6 @@
     burger.addEventListener('click', () => setMenu(mnav.hidden));
     mnav.addEventListener('click', (e) => { if (e.target.tagName === 'A') setMenu(false); });
     addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
-  }
-
-  /* ---------- hero glass cluster: 3D tilt + depth parallax ---------- */
-  const scene = document.getElementById('hvScene');
-  if (scene && !reduceMotion && matchMedia('(pointer: fine)').matches) {
-    const heroEl = document.querySelector('.hero');
-    const chips = scene.querySelectorAll('[data-depth]');
-    heroEl.addEventListener('pointermove', (e) => {
-      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
-      scene.style.transform = `rotateX(${ny * -9}deg) rotateY(${nx * 13}deg)`;
-      chips.forEach(c => { const d = +c.dataset.depth; c.style.translate = `${nx * d}px ${ny * d}px`; });
-    });
-    heroEl.addEventListener('pointerleave', () => {
-      scene.style.transform = '';
-      chips.forEach(c => { c.style.translate = ''; });
-    });
   }
 
   /* ---------- reveal on scroll (opt-in so no-JS still shows content) ---------- */
