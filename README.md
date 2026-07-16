@@ -8,10 +8,11 @@ My personal portfolio — sales professional with a data analyst's toolkit. The 
 
 ## What's on the page
 
-- **Track record** — animated stat tiles ($720K revenue generated, 150% quota attainment, 60+ accounts/month, $300K in dead stock recovered) and two interactive SVG charts: quota attainment vs. target, and the $300K-of-$2M inventory analysis. Every number comes straight from my resume — nothing synthetic.
-- **How I work** — a pinned, scroll-driven section: *Prospect → Analyze → Close.*
-- **Experience** — four roles across sales, operations, and inventory analytics in Los Angeles.
-- **Toolkit** — tabbed skills: Selling · Analytics (SQL, R, Python, Tableau) · Platforms (Salesforce, HubSpot, Velocify).
+- **Track record** — count-up stat tiles ($720K revenue generated, 150% quota attainment, 60+ accounts/month, $300K in dead stock recovered) and interactive SVG charts: quota attainment vs. target, and the $300K-of-$2M inventory analysis. Every number comes straight from my resume — nothing synthetic.
+- **Statement** — a scroll-driven interlude where the message inks in word by word as you scroll.
+- **How I work** — a pinned, scroll-scrubbed section: *Prospect → Analyze → Close.*
+- **Experience** — a career-timeline chart (2014–2020, hover any role for its headline result) plus four detailed roles across sales, operations, and inventory analytics in Los Angeles.
+- **Toolkit** — three groups in one scroll: Selling · Analytics (SQL, R, Python, Tableau) · Platforms (Salesforce, HubSpot, Velocify, BI tools).
 - **Credentials** — Google Data Analytics Professional Certificate, B.A. from CSU Long Beach.
 
 ## How it's built
@@ -19,10 +20,11 @@ My personal portfolio — sales professional with a data analyst's toolkit. The 
 One file. No frameworks, no build step.
 
 - **Plain HTML / CSS / JavaScript** — everything lives in [`index.html`](index.html)
-- **Typography:** [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) + [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans) (Google Fonts — the only external dependency)
+- **Native CSS scroll-driven animations** (`animation-timeline`) power the reading-progress bar, the hero's scroll-away, the word-by-word statement fill, and the section progress rail — zero animation JavaScript in supporting browsers, with graceful fallbacks everywhere else
 - **Charts:** hand-built SVG with hover tooltips — no charting library
-- **Motion:** IntersectionObserver scroll reveals, count-up counters, a `position: sticky` scrollytelling section, and CSS-only ambient effects (aurora gradients, film grain, marquee)
-- **Accessibility:** respects `prefers-reduced-motion`, keyboard-navigable tabs and chart marks, and all content remains visible with JavaScript disabled
+- **Typography:** [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) + [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans) (Google Fonts — the only external dependency)
+- **Design language:** Apple-inspired light theme — frosted-glass nav and mobile menu, soft-shadow cards, pastel aurora gradients
+- **Accessibility:** skip link, semantic landmarks, keyboard-navigable charts and menu, `prefers-reduced-motion` respected, and all content remains visible with JavaScript disabled
 
 ## Contact
 
