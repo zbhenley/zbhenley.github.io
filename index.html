@@ -227,7 +227,7 @@
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .hv-card { border-radius: 22px; }
-  .hv-main { padding: 28px 28px 24px; animation: bob 7s ease-in-out infinite; }
+  .hv-main { position: relative; padding: 28px 28px 24px; animation: bob 7s ease-in-out infinite; }
   .hv-label { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); }
   .hv-num {
     font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em;
@@ -258,6 +258,15 @@
   .hv-chip1 { top: -30px; right: -14px; animation: bob 6s ease-in-out 0.9s infinite; }
   .hv-chip2 { bottom: -26px; left: -10px; animation: bob 8s ease-in-out 1.7s infinite; }
   @keyframes bob { 50% { transform: translateY(-10px); } }
+  /* specular light sweep across the glass card */
+  .hv-main { overflow: hidden; }
+  .hv-main::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(105deg, transparent 42%, rgba(255,255,255,0.5) 50%, transparent 58%);
+    background-size: 260% 100%; background-position: 130% 0;
+    animation: sweep 6.5s ease-in-out infinite;
+  }
+  @keyframes sweep { 0%, 60% { background-position: 130% 0; } 90%, 100% { background-position: -60% 0; } }
 
   /* ============================================================
      MARQUEE
@@ -294,6 +303,12 @@
     font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.05; max-width: 20ch;
   }
   .sec-title em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sec-sub { color: var(--ink-2); font-size: 1.05rem; margin-top: 14px; max-width: 52ch; }
+  .sec-head.center { text-align: center; }
+  .sec-head.center .sec-label { justify-content: center; }
+  .sec-head.center .sec-label::after { display: none; }
+  .sec-head.center .sec-label::before { content: ""; height: 1px; width: 56px; background: var(--line-strong); }
+  .sec-head.center .sec-title, .sec-head.center .sec-sub { margin-left: auto; margin-right: auto; }
 
   /* reveal — hidden state gated on .js-anim so content survives without JS */
   .js-anim .rv { opacity: 0; transform: translateY(26px); transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1); }
@@ -530,6 +545,18 @@
   .mnav .mnav-cta { background: var(--grad); color: #fff; text-align: center; margin-top: 6px; }
 
   /* ============================================================
+     STATEMENT — scroll-scrubbed word fill (Apple keynote style)
+  ============================================================ */
+  #statement { padding: clamp(90px, 14vw, 170px) 0; }
+  .stmt {
+    font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em;
+    font-size: clamp(1.8rem, 4.4vw, 3.3rem); line-height: 1.25;
+    text-align: center; max-width: 24ch; margin: 0 auto;
+    text-wrap: balance;
+  }
+  .stmt em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* ============================================================
      SCROLL-DRIVEN CHOREOGRAPHY — native CSS, zero JS
      (progressively enhanced; older browsers keep IO reveals)
   ============================================================ */
@@ -545,11 +572,37 @@
         animation-timeline: scroll(root);
         animation-range: 0% 92svh;
       }
-      .marquee .marquee-track { animation-composition: add; }
+      /* words light up one by one as the statement crosses the viewport */
+      .stmt { view-timeline: --stmt block; }
+      .stmt .w {
+        opacity: 0.14;
+        animation: wfill linear both;
+        animation-timeline: --stmt;
+        /* per-word animation-range set inline from JS */
+      }
+      /* the Method section's progress rail fills across the pinned scroll */
+      .pin-outer { view-timeline: --pin block; }
+      .pin-rail { display: block; }
+      .pin-rail i {
+        display: block; height: 100%; width: 100%;
+        background: var(--grad);
+        transform: scaleY(0); transform-origin: top;
+        animation: railGrow linear both;
+        animation-timeline: --pin;
+        animation-range: contain 0% contain 100%;
+      }
     }
   }
   @keyframes progressGrow { to { transform: scaleX(1); } }
   @keyframes heroExit { to { opacity: 0; transform: translateY(-48px) scale(0.97); } }
+  @keyframes wfill { to { opacity: 1; } }
+  @keyframes railGrow { to { transform: scaleY(1); } }
+  .pin-rail {
+    display: none; position: absolute; right: calc(var(--pad) + 2px); top: 50%;
+    transform: translateY(-50%); height: 120px; width: 2px;
+    background: var(--line-strong); border-radius: 1px; overflow: hidden;
+    margin-right: 12px;
+  }
 
   /* ============================================================
      MOTION SAFETY
@@ -605,9 +658,9 @@
           <span class="word"><i><em>analyst</em>&nbsp;</i></span><span class="word"><i><em>discipline.</em></i></span>
         </h1>
         <p class="hero-sub">
-          I&rsquo;m Zachary Henley. I close deals the way an analyst reads data — <strong>consultative
-          selling and strategic prospecting</strong>, sharpened by <strong>SQL, R, Python, and
-          Tableau</strong>. The pipeline isn&rsquo;t a to-do list. It&rsquo;s a dataset.
+          I&rsquo;m Zachary Henley. I&rsquo;ve beaten every quota I&rsquo;ve carried — <strong>150% at
+          Green Solar, 120% at Spectrum</strong> — by treating the pipeline like a dataset:
+          consultative selling, sharpened by <strong>SQL, R, Python, and Tableau</strong>.
         </p>
         <div class="hero-cta">
           <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>Start a conversation</a>
@@ -634,6 +687,7 @@
             <div class="hv-foot">target = 100%</div>
           </div>
           <div class="hv-card hv-chip hv-chip1 glass" data-depth="26"><span class="up">↑</span>&nbsp;$720K revenue · 9 mos</div>
+          <div class="hv-card hv-chip hv-chip2 glass" data-depth="18"><span class="up">✓</span>&nbsp;SQL · R · Python · Tableau</div>
         </div>
       </div>
     </div>
@@ -652,9 +706,11 @@
 <!-- ================= NUMBERS ================= -->
 <section id="numbers">
   <div class="wrap">
-    <div class="sec-label rv">Track record</div>
-    <h2 class="sec-title rv d1">The numbers do the <em>first pitch.</em></h2>
-
+    <div class="sec-head center">
+      <div class="sec-label rv">Track record</div>
+      <h2 class="sec-title rv d1">The numbers do the <em>first pitch.</em></h2>
+      <p class="sec-sub rv d2">Every figure below comes straight from the record — real quotas, real revenue, no vanity metrics.</p>
+    </div>
     <div class="stats-grid rv d2">
       <div class="stat">
         <div class="stat-num" data-count="720" data-prefix="$" data-suffix="K">$0K</div>
@@ -695,6 +751,13 @@
   </div>
 </section>
 
+<!-- ================= STATEMENT (scroll-scrubbed word fill) ================= -->
+<section id="statement" aria-label="Personal statement">
+  <div class="wrap">
+    <p class="stmt" id="stmtText">Most reps work the pipeline. I read it — and every quota I&rsquo;ve carried, <em>I&rsquo;ve beaten.</em></p>
+  </div>
+</section>
+
 <!-- ================= METHOD (pinned scrollytelling) ================= -->
 <section id="method">
   <div class="pin-outer" id="pinOuter">
@@ -720,6 +783,7 @@
           </div>
         </div>
         <div class="step-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
+        <div class="pin-rail" aria-hidden="true"><i></i></div>
       </div>
     </div>
     <div class="pin-sentinel" data-for="0" style="position:absolute;top:0;height:33.3%;width:1px;"></div>
@@ -733,6 +797,12 @@
   <div class="wrap">
     <div class="sec-label rv">Experience</div>
     <h2 class="sec-title rv d1">Four roles, one thread: <em>data-driven revenue.</em></h2>
+
+    <div class="chart-card rv d1" style="margin-top: 48px;">
+      <h3>Six years, four seats at the revenue table</h3>
+      <div class="chart-sub">Hover a bar for the headline result from each role</div>
+      <svg id="ganttChart" viewBox="0 0 640 210" role="img" aria-label="Career timeline chart, 2014 to 2020: Inventory Manager at DaSalla's 2014 to 2016, Operations Manager at Senvicare 2016 to 2018, Customer Sales Representative at Spectrum in 2019, Sales Development Representative at Green Solar Technologies 2019 to 2020."></svg>
+    </div>
 
     <div class="xp-list">
       <article class="xp-card rv" data-spotlight>
@@ -805,8 +875,11 @@
 <!-- ================= SKILLS ================= -->
 <section id="skills">
   <div class="wrap">
-    <div class="sec-label rv">Toolkit</div>
-    <h2 class="sec-title rv d1">Two toolkits. <em>One job:</em> growing revenue.</h2>
+    <div class="sec-head center">
+      <div class="sec-label rv">Toolkit</div>
+      <h2 class="sec-title rv d1">Two toolkits. <em>One job:</em> growing revenue.</h2>
+      <p class="sec-sub rv d2">Sales skills close the deal. Analytics skills find it, price it, and prove it worked.</p>
+    </div>
 
     <div class="tk-group rv">
       <div class="tk-head">
@@ -861,8 +934,10 @@
 <!-- ================= EDUCATION ================= -->
 <section id="education">
   <div class="wrap">
-    <div class="sec-label rv">Credentials</div>
-    <h2 class="sec-title rv d1">The paper behind <em>the practice.</em></h2>
+    <div class="sec-head center">
+      <div class="sec-label rv">Credentials</div>
+      <h2 class="sec-title rv d1">The paper behind <em>the practice.</em></h2>
+    </div>
     <div class="edu-grid">
       <div class="edu-card rv"><span class="tag">Certificate — 2025</span><h3>Google Data Analytics Professional Certificate</h3><p>SQL · R · Tableau · data cleaning · statistical analysis · visualization</p></div>
       <div class="edu-card rv d1"><span class="tag">Certificate</span><h3>Public Policy and Leadership</h3><p>The Leadership Institute</p></div>
@@ -876,7 +951,7 @@
 <section id="contact">
   <div class="wrap rv">
     <h2 class="big">Let&rsquo;s talk<br><em>revenue.</em></h2>
-    <p class="lede">If you&rsquo;re building a data-driven sales team, I&rsquo;d love to show you what a pipeline looks like when someone treats it as a dataset.</p>
+    <p class="lede">Hiring for an Account Executive or analyst seat? In one call, I&rsquo;ll show you how I&rsquo;d work your pipeline like a dataset — and what that&rsquo;s worth in revenue.</p>
     <div class="contact-row">
       <a class="btn btn-fill" href="mailto:zacharybhenley@gmail.com" data-magnet>zacharybhenley@gmail.com</a>
       <a class="btn btn-line" href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener" data-magnet>Connect on LinkedIn</a>
@@ -886,7 +961,7 @@
 </main>
 
 <footer>
-  <span>© 2026 Zachary Henley — Los Angeles, CA</span>
+  <span>© 2026 Zachary Henley — Los Angeles, CA · Designed &amp; built by hand: one HTML file, zero frameworks</span>
   <div class="foot-links">
     <a href="https://www.linkedin.com/in/zachary-henley/" target="_blank" rel="noopener">LinkedIn</a>
     <a href="https://github.com/zbhenley" target="_blank" rel="noopener">GitHub</a>
@@ -922,6 +997,7 @@
     nav.classList.toggle('scrolled', y > 40);
     nav.classList.toggle('hidden', y > 500 && y > lastY);
     lastY = y;
+    document.getElementById('tooltip').classList.remove('show');
   }, { passive: true });
 
   /* ---------- mobile menu ---------- */
@@ -1075,6 +1151,74 @@
       o.observe(svg);
     } else animate();
   })();
+
+  /* Chart 3 — career timeline (gantt) */
+  (() => {
+    const svg = document.getElementById('ganttChart');
+    if (!svg) return;
+    const roles = [
+      { name: 'DaSalla’s', start: 2014 * 12 + 4, end: 2016 * 12 + 7, tipTitle: 'Inventory Manager · DaSalla’s', tipBody: 'Ran a $2M product portfolio; found $300K in dead stock through structured analysis.' },
+      { name: 'Senvicare', start: 2016 * 12 + 8, end: 2018 * 12 + 7, tipTitle: 'Operations Manager · Senvicare', tipBody: 'Coordinated multi-site operations across Greater LA; rebuilt performance reporting.' },
+      { name: 'Spectrum', start: 2019 * 12 + 2, end: 2019 * 12 + 7, tipTitle: 'Customer Sales Rep · Spectrum', tipBody: '60+ new accounts per month at 120% of quota.' },
+      { name: 'Green Solar', start: 2019 * 12 + 7, end: 2020 * 12 + 3, tipTitle: 'SDR · Green Solar Technologies', tipBody: '$720K revenue contributed at 150% of monthly quota.' },
+    ];
+    const X0 = 100, XW = 520, top = 18, rowH = 38, barH = 14;
+    const T0 = 2014 * 12, T1 = 2020 * 12 + 6;
+    const x = m => X0 + ((m - T0) / (T1 - T0)) * XW;
+    for (let yr = 2014; yr <= 2020; yr++) {
+      const xx = x(yr * 12);
+      svg.appendChild(el('line', { x1: xx, x2: xx, y1: top - 6, y2: top + rowH * 4 - 12, class: 'grid-line' }));
+      svg.appendChild(txt({ x: xx, y: top + rowH * 4 + 10, 'text-anchor': 'middle', class: 'ax-label' }, yr));
+    }
+    roles.forEach((r, i) => {
+      const y = top + i * rowH;
+      svg.appendChild(txt({ x: X0 - 12, y: y + barH / 2 + 4.5, 'text-anchor': 'end', class: 'cat-label' }, r.name));
+      const bar = el('rect', { x: x(r.start), y, width: 0, height: barH, rx: 4, fill: 'var(--chart-hue)', class: 'bar-rect', tabindex: 0, 'aria-label': r.tipTitle });
+      bar.style.transition = 'width 1s cubic-bezier(0.22,1,0.36,1) ' + (0.15 + i * 0.1) + 's';
+      svg.appendChild(bar);
+      bar.addEventListener('pointermove', ev => showTip(r.tipTitle, r.tipBody, ev.clientX, ev.clientY));
+      bar.addEventListener('focus', () => { const b = bar.getBoundingClientRect(); showTip(r.tipTitle, r.tipBody, b.right, b.top); });
+      bar.addEventListener('pointerleave', hideTip);
+      bar.addEventListener('blur', hideTip);
+      r._bar = bar; r._w = x(r.end) - x(r.start);
+    });
+    const animate = () => roles.forEach(r => r._bar.setAttribute('width', r._w));
+    if (io && !reduceMotion) {
+      const o = new IntersectionObserver(es => { if (es[0].isIntersecting) { animate(); o.disconnect(); } }, { threshold: 0.4 });
+      o.observe(svg);
+    } else animate();
+  })();
+
+  /* ---------- statement: split words for the scroll-scrubbed fill ---------- */
+  const stmt = document.getElementById('stmtText');
+  if (stmt) {
+    const wrapWords = (node, target) => {
+      [...node.childNodes].forEach(child => {
+        if (child.nodeType === 3) {
+          child.textContent.split(/\s+/).filter(Boolean).forEach(word => {
+            const s = document.createElement('span');
+            s.className = 'w';
+            s.textContent = word;
+            target.appendChild(s);
+            target.appendChild(document.createTextNode(' '));
+          });
+        } else {
+          const clone = child.cloneNode(false);
+          target.appendChild(clone);
+          wrapWords(child, clone);
+        }
+      });
+    };
+    const tmp = document.createElement('div');
+    wrapWords(stmt, tmp);
+    stmt.replaceChildren(...tmp.childNodes);
+    const words = stmt.querySelectorAll('.w');
+    const n = words.length;
+    words.forEach((w, i) => {
+      const start = 12 + (i / n) * 48;   // words light up between 12%–60% of the pass
+      w.style.animationRange = `cover ${start.toFixed(1)}% cover ${(start + 9).toFixed(1)}%`;
+    });
+  }
 
   /* ---------- pinned scrollytelling ---------- */
   const steps = document.querySelectorAll('.step');
